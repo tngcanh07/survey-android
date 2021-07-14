@@ -1,9 +1,21 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-kapt")
     id("androidx.navigation.safeargs.kotlin")
     id("dagger.hilt.android.plugin")
+}
+
+private val localProperties = gradleLocalProperties(rootDir)
+
+fun getProperty(name: String): String? {
+    return if (localProperties.containsKey(name)) {
+        localProperties.getProperty(name)
+    } else {
+        null
+    }
 }
 
 android {
@@ -20,10 +32,62 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildTypes {
+        create("stage") {
+            initWith(buildTypes.getAt("debug"))
+            applicationIdSuffix = ".stage"
+            setMatchingFallbacks("stage", "debug", "release")
+
+            buildConfigField(
+                type = "String",
+                name = "BASE_URL",
+                value = getProperty("apiConfigs.staging.baseUrl").orEmpty()
+            )
+            buildConfigField(
+                type = "String",
+                name = "CLIENT_ID",
+                value = getProperty("apiConfigs.staging.clientId").orEmpty()
+            )
+            buildConfigField(
+                type = "String",
+                name = "CLIENT_SECRET",
+                value = getProperty("apiConfigs.staging.clientSecret").orEmpty()
+            )
+        }
+
+        create("production") {
+            initWith(buildTypes.getAt("release"))
+            setMatchingFallbacks("production", "release")
+
+            buildConfigField(
+                type = "String",
+                name = "BASE_URL",
+                value = getProperty("apiConfigs.production.baseUrl").orEmpty()
+            )
+            buildConfigField(
+                type = "String",
+                name = "CLIENT_ID",
+                value = getProperty("apiConfigs.production.clientId").orEmpty()
+            )
+            buildConfigField(
+                type = "String",
+                name = "CLIENT_SECRET",
+                value = getProperty("apiConfigs.production.clientSecret").orEmpty()
+            )
+        }
+    }
+
+    variantFilter {
+        if (name.contains("release", true) || name.contains("debug", true)) {
+            ignore = true
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = Versions.JVM_TARGET
     }
