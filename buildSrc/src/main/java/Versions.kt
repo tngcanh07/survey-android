@@ -14,6 +14,9 @@ object Versions {
     const val HILT = "2.37"
     const val JAVAX_INJECT = "1"
 
+    const val RX_JAVA3 = "3.0.13"
+    const val RX_ANDROID3 = "3.0.0"
+
     const val RETROFIT = "2.9.0"
     const val OKHTTP = "4.9.1"
     const val GSON = "2.8.7"
@@ -25,6 +28,6 @@ object Versions {
     const val NAVIGATION = "2.3.5"
     const val GLIDE = "4.12.0"
 
-    const val JUNIT = "4.13.2"
+    const val JUNIT = "5.7.2"
     const val MOCKITO = "3.11.2"
 }
