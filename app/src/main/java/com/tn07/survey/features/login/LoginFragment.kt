@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.tn07.survey.BLURRY_RADIUS
+import com.tn07.survey.BLURRY_SAMPLING
 import com.tn07.survey.R
 import com.tn07.survey.databinding.FragmentLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,8 +57,8 @@ class LoginFragment : Fragment() {
             .let { it as? BitmapDrawable }
             ?.let {
                 Blurry.with(requireContext())
-                    .radius(25)
-                    .sampling(2)
+                    .radius(BLURRY_RADIUS)
+                    .sampling(BLURRY_SAMPLING)
                     .from(it.bitmap)
                     .into(imageView)
             }

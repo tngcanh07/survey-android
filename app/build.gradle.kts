@@ -119,7 +119,7 @@ dependencies {
     implementation(Libs.HILT_ANDROID)
     kapt(Libs.HILT_COMPILER)
 
-    implementation("jp.wasabeef:blurry:4.0.0")
+    implementation(Libs.BLURRY)
 
     testImplementation(Libs.JUNIT)
     testImplementation(Libs.MOCKITO)
