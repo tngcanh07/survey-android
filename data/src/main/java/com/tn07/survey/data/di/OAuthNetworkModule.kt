@@ -1,6 +1,5 @@
 package com.tn07.survey.data.di
 
-import com.google.gson.Gson
 import com.tn07.survey.data.api.NETWORK_CONNECT_TIME_OUT
 import com.tn07.survey.data.api.NETWORK_READ_TIME_OUT
 import com.tn07.survey.data.api.NETWORK_WRITE_TIME_OUT
@@ -25,8 +24,24 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class OAuthNetworkModule {
-    @Singleton
+
     @Provides
+    @Singleton
+    @OAuthQualifier
+    fun providesRetrofit(
+        oauthConfig: OAuthConfig,
+        @OAuthQualifier okHttpClient: OkHttpClient
+    ): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(oauthConfig.baseUrl)
+            .client(okHttpClient)
+            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    @Provides
+    @Singleton
     @OAuthQualifier
     fun providesOkHttpClient(oauthConfig: OAuthConfig): OkHttpClient {
         val builder = OkHttpClient.Builder()
@@ -39,21 +54,5 @@ class OAuthNetworkModule {
             builder.addInterceptor(log)
         }
         return builder.build()
-    }
-
-    @Singleton
-    @Provides
-    @OAuthQualifier
-    fun providesRetrofit(
-        oauthConfig: OAuthConfig,
-        gson: Gson,
-        @OAuthQualifier okHttpClient: OkHttpClient
-    ): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(oauthConfig.baseUrl)
-            .client(okHttpClient)
-            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
     }
 }
