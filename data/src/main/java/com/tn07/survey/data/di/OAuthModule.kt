@@ -1,9 +1,11 @@
 package com.tn07.survey.data.di
 
+import com.tn07.survey.data.oauth.OAuthRepositoryImpl
 import com.tn07.survey.data.oauth.datasources.local.OAuthLocalDataSource
 import com.tn07.survey.data.oauth.datasources.local.OAuthLocalDataSourceImpl
 import com.tn07.survey.data.oauth.datasources.remote.OAuthRemoteDataSource
 import com.tn07.survey.data.oauth.datasources.remote.OAuthRemoteDataSourceImpl
+import com.tn07.survey.domain.repositories.OAuthRepository
 import dagger.Binds
 
 /**
@@ -16,4 +18,7 @@ interface OAuthModule {
 
     @Binds
     fun bindRemoteDataSource(impl: OAuthRemoteDataSourceImpl): OAuthRemoteDataSource
+
+    @Binds
+    fun bindRepository(impl: OAuthRepositoryImpl): OAuthRepository
 }

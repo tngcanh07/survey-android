@@ -17,6 +17,7 @@ import java.net.UnknownHostException
  * Jul 14, 2021 at 23:29
  */
 class ApiCompletableTransformer : CompletableTransformer {
+
     override fun apply(upstream: Completable): CompletableSource {
         return upstream.onErrorResumeNext {
             Completable.error(it.mapToDomainException())

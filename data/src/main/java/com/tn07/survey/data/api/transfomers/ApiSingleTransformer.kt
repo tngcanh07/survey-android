@@ -11,6 +11,7 @@ import retrofit2.Response
  * Jul 14, 2021 at 23:26
  */
 class ApiSingleTransformer<T> : SingleTransformer<Response<T>, T> {
+
     override fun apply(upstream: Single<Response<T>>): SingleSource<T> {
         return upstream
             .map { response: Response<T> ->

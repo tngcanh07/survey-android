@@ -8,6 +8,6 @@ import com.tn07.survey.domain.entities.AccessToken
  * Jul 14, 2021 at 23:33
  */
 
-fun AccessTokenDataModel.toAccessToken(): AccessToken {
+internal fun AccessTokenDataModel.toAccessToken(): AccessToken {
     return this
 }
