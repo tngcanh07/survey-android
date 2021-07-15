@@ -29,8 +29,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class NetworkModule {
 
-    @Singleton
     @Provides
+    @Singleton
     fun providesRetrofit(
         apiConfig: ApiConfig,
         gson: Gson,
@@ -44,8 +44,8 @@ class NetworkModule {
             .build()
     }
 
-    @Singleton
     @Provides
+    @Singleton
     fun providesOkHttpClient(
         apiConfig: ApiConfig,
         interceptor: Interceptor,

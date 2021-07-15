@@ -1,8 +1,9 @@
 package com.tn07.survey.data.oauth.datasources.remote
 
+import com.tn07.survey.data.api.OAuthConfig
 import com.tn07.survey.data.api.transfomers.ApiCompletableTransformer
 import com.tn07.survey.data.api.transfomers.ApiSingleTransformer
-import com.tn07.survey.data.api.OAuthConfig
+import com.tn07.survey.data.di.qualifier.OAuthQualifier
 import com.tn07.survey.data.oauth.datasources.remote.requestmodel.RefreshTokenRequestModel
 import com.tn07.survey.data.oauth.datasources.remote.requestmodel.RequestPasswordRequestModel
 import com.tn07.survey.data.oauth.datasources.remote.requestmodel.RequestTokenRequestModel
@@ -18,7 +19,7 @@ import javax.inject.Inject
  * Jul 14, 2021 at 23:09
  */
 class OAuthRemoteDataSourceImpl @Inject constructor(
-    private val retrofit: Retrofit,
+    @OAuthQualifier private val retrofit: Retrofit,
     private val oauthConfig: OAuthConfig
 ) : OAuthRemoteDataSource {
     private val oauthApi: OAuthApi by lazy {

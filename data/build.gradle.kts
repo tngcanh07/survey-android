@@ -22,13 +22,13 @@ dependencies {
     implementation(project(Modules.DOMAIN))
     implementation(Libs.KOTLIN_STDLIB)
 
-    implementation(Libs.RX_JAVA3)
-    implementation(Libs.RETROFIT)
+    api(Libs.RETROFIT)
     implementation(Libs.RETROFIT_RX_JAVA3_ADAPTER)
     implementation(Libs.RETROFIT_GSON_CONVERTER)
     implementation(Libs.OKHTTP)
     implementation(Libs.OKHTTP_LOGGING)
     implementation(Libs.GSON)
+    implementation(Libs.RX_JAVA3)
 
     implementation(Libs.HILT_ANDROID)
     kapt(Libs.HILT_COMPILER)
