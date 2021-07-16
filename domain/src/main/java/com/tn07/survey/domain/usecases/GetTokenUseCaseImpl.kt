@@ -9,15 +9,15 @@ import javax.inject.Inject
  * Created by toannguyen
  * Jul 13, 2021 at 21:29
  */
-class GetUserUseCaseImpl @Inject constructor(
+class GetTokenUseCaseImpl @Inject constructor(
     private val repository: OAuthRepository
-) : GetUserUseCase {
+) : GetTokenUseCase {
 
-    override fun getUser(): Token {
+    override fun getToken(): Token {
         return repository.getToken()
     }
 
-    override fun getUserObservable(): Observable<Token> {
+    override fun getTokenObservable(): Observable<Token> {
         return repository.getTokenObservable()
     }
 }

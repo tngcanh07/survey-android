@@ -1,7 +1,7 @@
 package com.tn07.survey.features.login
 
 import com.tn07.survey.domain.entities.AccessToken
-import com.tn07.survey.domain.usecases.GetUserUseCase
+import com.tn07.survey.domain.usecases.GetTokenUseCase
 import com.tn07.survey.domain.usecases.LoginUseCase
 import com.tn07.survey.features.base.BaseViewModel
 import com.tn07.survey.features.login.uimodel.LoginResultUiModel
@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val getUserUseCase: GetUserUseCase
+    private val getTokenUseCase: GetTokenUseCase
 ) : BaseViewModel() {
 
     private val _loginResult = PublishSubject.create<LoginResultUiModel>()
@@ -34,7 +34,7 @@ class LoginViewModel @Inject constructor(
         get() = _loginUiModel
 
     val loginState: Observable<Boolean>
-        get() = getUserUseCase.getUserObservable()
+        get() = getTokenUseCase.getTokenObservable()
             .map { it is AccessToken }
             .distinctUntilChanged()
 
