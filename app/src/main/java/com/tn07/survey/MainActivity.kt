@@ -38,5 +38,4 @@ class MainActivity : BaseActivity(), LoginNavigator {
             .replace(R.id.container, HomeFragment())
             .commit()
     }
-
 }
