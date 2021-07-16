@@ -7,13 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.textfield.TextInputEditText
 import com.tn07.survey.BLURRY_RADIUS
 import com.tn07.survey.BLURRY_SAMPLING
 import com.tn07.survey.R
 import com.tn07.survey.databinding.FragmentLoginBinding
+import com.tn07.survey.features.base.BaseFragment
 import com.tn07.survey.features.login.uimodel.LoginResultUiModel
 import com.tn07.survey.features.login.uimodel.TextFieldUiModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,7 +27,7 @@ import javax.inject.Inject
  * Jul 15, 2021 at 09:03
  */
 @AndroidEntryPoint
-class LoginFragment : Fragment() {
+class LoginFragment : BaseFragment() {
 
     private val viewModel by viewModels<LoginViewModel>()
 
@@ -61,7 +61,6 @@ class LoginFragment : Fragment() {
         }
 
         blurBackground()
-
     }
 
     override fun onResume() {
@@ -70,6 +69,7 @@ class LoginFragment : Fragment() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(::bindLoginResult)
+            .addToCompositeDisposable()
 
         viewModel.loginUiModel
             .subscribeOn(Schedulers.io())
@@ -83,6 +83,8 @@ class LoginFragment : Fragment() {
                     hideLoading()
                 }
             }
+            .addToCompositeDisposable()
+
         viewModel.loginState
             .filter { it }
             .subscribeOn(Schedulers.io())
@@ -90,6 +92,7 @@ class LoginFragment : Fragment() {
             .subscribe {
                 navigator.navigateLoginSuccess()
             }
+            .addToCompositeDisposable()
     }
 
     private fun showLoading() {
@@ -125,7 +128,7 @@ class LoginFragment : Fragment() {
             LoginResultUiModel.Success -> {
                 Toast.makeText(
                     requireContext(),
-                    "you have logged in successfully!!",
+                    R.string.login_success_message,
                     Toast.LENGTH_SHORT
                 ).show()
             }

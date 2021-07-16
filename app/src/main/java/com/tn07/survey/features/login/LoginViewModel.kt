@@ -1,17 +1,15 @@
 package com.tn07.survey.features.login
 
-import androidx.lifecycle.ViewModel
 import com.tn07.survey.domain.entities.AccessToken
 import com.tn07.survey.domain.usecases.GetUserUseCase
 import com.tn07.survey.domain.usecases.LoginUseCase
+import com.tn07.survey.features.base.BaseViewModel
 import com.tn07.survey.features.login.uimodel.LoginResultUiModel
 import com.tn07.survey.features.login.uimodel.LoginUiModel
 import com.tn07.survey.features.login.uimodel.TextFieldUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
@@ -25,9 +23,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val getUserUseCase: GetUserUseCase
-) : ViewModel() {
-
-    private val compositeDisposable = CompositeDisposable()
+) : BaseViewModel() {
 
     private val _loginResult = PublishSubject.create<LoginResultUiModel>()
     val loginResult: Observable<LoginResultUiModel>
@@ -60,18 +56,15 @@ class LoginViewModel @Inject constructor(
                     ?.let(it)
                     ?.let(_loginUiModel::onNext)
             }
-            .let(::addToCompositeDisposable)
+            .addToCompositeDisposable()
 
     }
-
-    val isLoggedIn: Boolean
-        get() = getUserUseCase.getUser() is AccessToken
 
     fun login(email: String, password: String) {
         loginUseCase.login(email = email, password = password)
             .doOnSubscribe { onStartLogIn(email = email, password = password) }
             .subscribe(::onLoginSuccess, ::onLoginError)
-            .let(::addToCompositeDisposable)
+            .addToCompositeDisposable()
     }
 
     private fun onLoginSuccess() {
@@ -96,15 +89,5 @@ class LoginViewModel @Inject constructor(
         loginUiModelEvents.onNext {
             it.copy(isLoading = false)
         }
-    }
-
-    @Synchronized
-    fun addToCompositeDisposable(disposable: Disposable) {
-        compositeDisposable.add(disposable)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        compositeDisposable.clear()
     }
 }
