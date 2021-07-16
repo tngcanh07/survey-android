@@ -3,10 +3,11 @@ package com.tn07.survey
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.tn07.survey.features.login.LoginFragment
+import com.tn07.survey.features.login.LoginNavigator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), LoginNavigator {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -14,5 +15,16 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .add(R.id.container, LoginFragment())
             .commit()
+    }
+
+    override fun navigateLoginSuccess() {
+        supportFragmentManager.findFragmentById(R.id.container)
+            ?.let { it as? LoginFragment }
+            ?.let {
+                supportFragmentManager.beginTransaction()
+                    .remove(it)
+                    .commit()
+            }
+
     }
 }
