@@ -14,6 +14,8 @@ object Libs {
     const val NAVIGATION_UI = "androidx.navigation:navigation-ui-ktx:${Versions.NAVIGATION}"
     const val SWIPE_REFRESH_LAYOUT =
         "androidx.swiperefreshlayout:swiperefreshlayout:${Versions.SWIPE_REFRESH_LAYOUT}"
+    const val BLURRY = "jp.wasabeef:blurry:${Versions.BLURRY}"
+    const val RX_BINDING = "com.jakewharton.rxbinding4:rxbinding:${Versions.RX_BINDING}"
 
     const val HILT_ANDROID = "com.google.dagger:hilt-android:${Versions.HILT}"
     const val HILT_COMPILER = "com.google.dagger:hilt-compiler:${Versions.HILT}"
@@ -23,7 +25,8 @@ object Libs {
     const val RX_ANDROID3 = "io.reactivex.rxjava3:rxandroid:${Versions.RX_ANDROID3}"
     const val RETROFIT = "com.squareup.retrofit2:retrofit:${Versions.RETROFIT}"
     const val RETROFIT_GSON_CONVERTER = "com.squareup.retrofit2:converter-gson:${Versions.RETROFIT}"
-    const val RETROFIT_RX_JAVA3_ADAPTER = "com.squareup.retrofit2:adapter-rxjava3:${Versions.RETROFIT}"
+    const val RETROFIT_RX_JAVA3_ADAPTER =
+        "com.squareup.retrofit2:adapter-rxjava3:${Versions.RETROFIT}"
     const val GSON = "com.google.code.gson:gson:${Versions.GSON}"
     const val OKHTTP = "com.squareup.okhttp3:okhttp:${Versions.OKHTTP}"
     const val OKHTTP_LOGGING = "com.squareup.okhttp3:logging-interceptor:${Versions.OKHTTP}"

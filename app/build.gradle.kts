@@ -91,10 +91,15 @@ android {
     kotlinOptions {
         jvmTarget = Versions.JVM_TARGET
     }
+
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
     implementation(project(Modules.DOMAIN))
+    implementation(project(Modules.DATA))
 
     implementation(Libs.KOTLIN_STDLIB)
 
@@ -105,11 +110,17 @@ dependencies {
     implementation(Libs.NAVIGATION_FRAGMENT)
     implementation(Libs.NAVIGATION_UI)
 
+    implementation(Libs.RX_JAVA3)
+    implementation(Libs.RX_ANDROID3)
+
     implementation(Libs.GLIDE_RUNTIME)
     kapt(Libs.GLIDE_COMPILER)
 
     implementation(Libs.HILT_ANDROID)
     kapt(Libs.HILT_COMPILER)
+
+    implementation(Libs.RX_BINDING)
+    implementation(Libs.BLURRY)
 
     testImplementation(Libs.JUNIT)
     testImplementation(Libs.MOCKITO)

@@ -15,47 +15,47 @@ import org.mockito.Mockito
  * Created by toannguyen
  * Jul 13, 2021 at 22:09
  */
-internal class GetUserUseCaseImplTest {
+internal class GetTokenUseCaseImplTest {
 
-    private lateinit var useCase: GetUserUseCaseImpl
+    private lateinit var useCase: GetTokenUseCaseImpl
     private lateinit var repository: OAuthRepository
 
     @BeforeEach
     fun setUp() {
         repository = Mockito.mock(OAuthRepository::class.java)
-        useCase = GetUserUseCaseImpl(repository)
+        useCase = GetTokenUseCaseImpl(repository)
     }
 
     @Test
-    fun getUser_success_authorizedUser() {
+    fun getToken_success_accessToken() {
         val expectedToken = Mockito.mock(AccessToken::class.java)
         Mockito.`when`(repository.getToken()).thenReturn(expectedToken)
 
-        val result = useCase.getUser()
+        val result = useCase.getToken()
 
         Assertions.assertEquals(expectedToken, result)
         Mockito.verify(repository).getToken()
     }
 
     @Test
-    fun getUser_success_anonymous() {
+    fun getToken_success_anonymous() {
         val expectedToken = AnonymousToken
         Mockito.`when`(repository.getToken()).thenReturn(expectedToken)
 
-        val result = useCase.getUser()
+        val result = useCase.getToken()
 
         Assertions.assertEquals(expectedToken, result)
         Mockito.verify(repository).getToken()
     }
 
     @Test
-    fun getUserObservable_success() {
+    fun getTokenObservable_success() {
         val initToken = AnonymousToken
         val nextToken = Mockito.mock(AccessToken::class.java)
         val tokenSubject = BehaviorSubject.createDefault<Token>(initToken)
         Mockito.`when`(repository.getTokenObservable()).thenReturn(tokenSubject)
 
-        val testObserver = useCase.getUserObservable()
+        val testObserver = useCase.getTokenObservable()
             .test()
             .assertValue(initToken)
             .assertNotComplete()
@@ -75,12 +75,12 @@ internal class GetUserUseCaseImplTest {
     }
 
     @Test
-    fun getUserObservable_error() {
+    fun getTokenObservable_error() {
         val expectedException = IllegalArgumentException()
         Mockito.`when`(repository.getTokenObservable())
             .thenReturn(Observable.error(expectedException))
 
-        useCase.getUserObservable()
+        useCase.getTokenObservable()
             .test()
             .assertError(expectedException)
             .assertNoValues()

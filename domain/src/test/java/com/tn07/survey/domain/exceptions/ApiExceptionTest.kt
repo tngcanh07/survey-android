@@ -13,8 +13,8 @@ internal class ApiExceptionTest {
         val httpCode = 423
         val exception = ApiException(httpCode)
 
-        Assertions.assertNull(exception.message)
         Assertions.assertNull(exception.cause)
+        Assertions.assertEquals("code=$httpCode null", exception.message)
         Assertions.assertEquals(httpCode, exception.httpCode)
     }
 
@@ -23,20 +23,20 @@ internal class ApiExceptionTest {
         val httpCode = 423
         val exception = ApiException(httpCode, null)
 
-        Assertions.assertNull(exception.message)
         Assertions.assertNull(exception.cause)
+        Assertions.assertEquals("code=$httpCode null", exception.message)
         Assertions.assertEquals(httpCode, exception.httpCode)
     }
 
     @Test
     fun createException_withAllParams() {
         val httpCode = 423
-        val cause = Exception()
+        val cause = Exception("error-message")
 
         val exception = ApiException(httpCode, cause)
 
-        Assertions.assertNull(exception.message)
         Assertions.assertEquals(cause, exception.cause)
+        Assertions.assertEquals("code=$httpCode error-message", exception.message)
         Assertions.assertEquals(httpCode, exception.httpCode)
     }
 }

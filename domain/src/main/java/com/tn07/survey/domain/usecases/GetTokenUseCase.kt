@@ -7,8 +7,8 @@ import io.reactivex.rxjava3.core.Observable
  * Created by toannguyen
  * Jul 13, 2021 at 21:28
  */
-interface GetUserUseCase {
-    fun getUser(): Token
+interface GetTokenUseCase {
+    fun getToken(): Token
 
-    fun getUserObservable(): Observable<Token>
+    fun getTokenObservable(): Observable<Token>
 }
