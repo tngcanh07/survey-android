@@ -11,6 +11,8 @@ import com.tn07.survey.databinding.NavHeaderHomeBinding
 import com.tn07.survey.features.base.BaseFragment
 import com.tn07.survey.features.home.uimodel.HomeState
 import com.tn07.survey.features.home.uimodel.UserUiModel
+import com.tn07.survey.features.home.view.DepthPageTransformer
+import com.tn07.survey.features.home.view.SurveyAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 
@@ -69,6 +71,16 @@ class HomeFragment : BaseFragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(::bindHomeState)
             .addToCompositeDisposable()
+
+        viewModel.surveyListResult
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { pagingData ->
+                SurveyAdapter().also {
+                    it.submitData(lifecycle, pagingData)
+                    binding.contentHomePage.surveyViewPager.adapter = it
+                }
+            }
+        binding.contentHomePage.surveyViewPager.setPageTransformer(DepthPageTransformer())
     }
 
     private fun bindHomeState(state: HomeState) {

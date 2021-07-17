@@ -106,6 +106,8 @@ dependencies {
     implementation(Libs.APP_COMPAT)
     implementation(Libs.MATERIAL)
     implementation(Libs.CONSTRAINT_LAYOUT)
+    implementation(Libs.PAGING_RUNTIME)
+    implementation(Libs.PAGING_RXJAVA)
     implementation(Libs.SWIPE_REFRESH_LAYOUT)
     implementation(Libs.NAVIGATION_FRAGMENT)
     implementation(Libs.NAVIGATION_UI)

@@ -11,18 +11,6 @@
         android:layout_height="match_parent"
         tools:openDrawer="end">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/background_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            tools:ignore="ContentDescription" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/ic_overlay_background" />
-
         <include
             android:id="@+id/content_home_page"
             layout="@layout/content_home"
