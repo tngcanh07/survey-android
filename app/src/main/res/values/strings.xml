@@ -13,5 +13,6 @@
     <string name="error_invalid_password">Please enter the password</string>
 
     <string name="error_connection">Could not connect to the server, please check your network connection and try again</string>
+    <string name="menu_logout_title">Logout</string>
 
 </resources>

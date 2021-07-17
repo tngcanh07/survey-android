@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import com.tn07.survey.R
 import com.tn07.survey.databinding.FragmentHomeBinding
 import com.tn07.survey.features.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 
 /**
  * Created by toannguyen
@@ -14,7 +17,8 @@ import dagger.hilt.android.AndroidEntryPoint
  */
 @AndroidEntryPoint
 class HomeFragment : BaseFragment() {
-
+    
+    private val viewModel: HomeViewModel by viewModels()
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = requireNotNull(_binding)
@@ -26,6 +30,31 @@ class HomeFragment : BaseFragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.navView.setNavigationItemSelectedListener {
+            if (it.itemId == R.id.nav_logout) {
+                viewModel.logout()
+                binding.drawerLayout.closeDrawer(binding.navView)
+                true
+            } else {
+                false
+            }
+        }
+        binding.loadingOverlay.setOnClickListener { }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.loadingState
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { if (it) View.VISIBLE else View.GONE }
+            .subscribe {
+                binding.loadingOverlay.visibility = it
+            }
     }
 
     override fun onDestroyView() {
