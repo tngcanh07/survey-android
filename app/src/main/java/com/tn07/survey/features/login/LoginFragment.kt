@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
-import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import com.jakewharton.rxbinding4.widget.afterTextChangeEvents
 import com.tn07.survey.BLURRY_RADIUS
 import com.tn07.survey.BLURRY_SAMPLING
 import com.tn07.survey.R
@@ -20,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import jp.wasabeef.blurry.Blurry
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -53,13 +56,25 @@ class LoginFragment : BaseFragment() {
         binding.passwordInputLayout.suffixTextView.setOnClickListener {
             Toast.makeText(requireContext(), "Coming soon!", Toast.LENGTH_SHORT).show()
         }
-        binding.loginButton.setOnClickListener {
-            viewModel.login(
-                email = binding.emailEditText.text?.toString().orEmpty(),
-                password = binding.passwordEditText.text?.toString().orEmpty()
-            )
+        binding.emailEditText.doAfterTextChanged {
+            with(binding.emailInputLayout) {
+                if (error?.isNotEmpty() == true) {
+                    error = null
+                    isErrorEnabled = false
+                }
+            }
         }
-
+        binding.passwordEditText.doAfterTextChanged {
+            with(binding.passwordInputLayout) {
+                if (error?.isNotEmpty() == true) {
+                    error = null
+                    isErrorEnabled = false
+                }
+            }
+        }
+        binding.loginButton.setOnClickListener {
+            viewModel.login()
+        }
         blurBackground()
     }
 
@@ -75,8 +90,8 @@ class LoginFragment : BaseFragment() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
-                bindTextField(it.emailTextField, binding.emailEditText)
-                bindTextField(it.passwordTextField, binding.passwordEditText)
+                bindTextField(it.emailTextField, binding.emailInputLayout)
+                bindTextField(it.passwordTextField, binding.passwordInputLayout)
                 if (it.isLoading) {
                     showLoading()
                 } else {
@@ -93,26 +108,54 @@ class LoginFragment : BaseFragment() {
                 navigator.navigateLoginSuccess()
             }
             .addToCompositeDisposable()
+
+
+        binding.emailEditText.afterTextChangeEvents()
+            .debounce(DEBOUNCE_TEXT_CHANGE_EVENT, TimeUnit.MILLISECONDS)
+            .subscribe {
+                viewModel.setEmail(it.editable?.toString().orEmpty())
+            }
+            .addToCompositeDisposable()
+
+        binding.passwordEditText.afterTextChangeEvents()
+            .debounce(DEBOUNCE_TEXT_CHANGE_EVENT, TimeUnit.MILLISECONDS)
+            .subscribe {
+                viewModel.setPassword(it.editable?.toString().orEmpty())
+            }
+            .addToCompositeDisposable()
     }
 
     private fun showLoading() {
         binding.emailInputLayout.isEnabled = false
         binding.passwordInputLayout.isEnabled = false
-        binding.loginButton.isEnabled = false
+        binding.loginButton.apply {
+            isEnabled = false
+            setText(R.string.login_processing_button)
+        }
     }
 
     private fun hideLoading() {
         binding.emailInputLayout.isEnabled = true
         binding.passwordInputLayout.isEnabled = true
-        binding.loginButton.isEnabled = true
+        binding.loginButton.apply {
+            isEnabled = true
+            setText(R.string.login_button)
+        }
     }
 
     private fun bindTextField(
         textField: TextFieldUiModel,
-        textInputEditText: TextInputEditText
+        textInputLayout: TextInputLayout
     ) {
-        if (textField.text != textInputEditText.text?.toString()) {
-            textInputEditText.setText(textField.text)
+        textInputLayout.editText?.let { editText ->
+            if (textField.text != editText.text?.toString() && !editText.isFocused) {
+                editText.setText(textField.text)
+            }
+        }
+
+        textInputLayout.error = textField.error
+        if (textField.error.isNullOrEmpty()) {
+            textInputLayout.isErrorEnabled = false
         }
     }
 
@@ -151,5 +194,9 @@ class LoginFragment : BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        private const val DEBOUNCE_TEXT_CHANGE_EVENT = 250L
     }
 }

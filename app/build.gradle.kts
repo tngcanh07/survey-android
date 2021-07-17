@@ -119,6 +119,7 @@ dependencies {
     implementation(Libs.HILT_ANDROID)
     kapt(Libs.HILT_COMPILER)
 
+    implementation(Libs.RX_BINDING)
     implementation(Libs.BLURRY)
 
     testImplementation(Libs.JUNIT)

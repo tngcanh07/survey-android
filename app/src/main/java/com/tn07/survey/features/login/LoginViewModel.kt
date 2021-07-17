@@ -4,15 +4,20 @@ import com.tn07.survey.domain.entities.AccessToken
 import com.tn07.survey.domain.usecases.GetTokenUseCase
 import com.tn07.survey.domain.usecases.LoginUseCase
 import com.tn07.survey.features.base.BaseViewModel
+import com.tn07.survey.features.login.transformer.LoginTransformer
+import com.tn07.survey.features.login.uimodel.FormError
 import com.tn07.survey.features.login.uimodel.LoginResultUiModel
 import com.tn07.survey.features.login.uimodel.LoginUiModel
 import com.tn07.survey.features.login.uimodel.TextFieldUiModel
+import com.tn07.survey.features.login.validator.LogInFormValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -22,7 +27,9 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val getTokenUseCase: GetTokenUseCase
+    private val getTokenUseCase: GetTokenUseCase,
+    private val formValidator: LogInFormValidator,
+    private val transformer: LoginTransformer
 ) : BaseViewModel() {
 
     private val _loginResult = PublishSubject.create<LoginResultUiModel>()
@@ -31,13 +38,13 @@ class LoginViewModel @Inject constructor(
 
     private val _loginUiModel = BehaviorSubject.create<LoginUiModel>()
     val loginUiModel: Observable<LoginUiModel>
-        get() = _loginUiModel
+        get() = _loginUiModel.debounce(DEBOUNCE_UI_MODEL, TimeUnit.MILLISECONDS)
+            .distinctUntilChanged()
 
     val loginState: Observable<Boolean>
         get() = getTokenUseCase.getTokenObservable()
             .map { it is AccessToken }
             .distinctUntilChanged()
-
 
     private val loginUiModelEvents = PublishSubject.create<(LoginUiModel) -> LoginUiModel>()
 
@@ -60,9 +67,32 @@ class LoginViewModel @Inject constructor(
 
     }
 
-    fun login(email: String, password: String) {
-        loginUseCase.login(email = email, password = password)
-            .doOnSubscribe { onStartLogIn(email = email, password = password) }
+    fun setEmail(email: String) {
+        loginUiModelEvents.onNext {
+            transformer.updateEmail(it, email)
+        }
+    }
+
+    fun setPassword(password: String) {
+        loginUiModelEvents.onNext {
+            transformer.updatePassword(it, password)
+        }
+    }
+
+    fun login() {
+        Single.fromCallable {
+            val uiModel = _loginUiModel.value
+            val email = uiModel.emailTextField.text
+            val password = uiModel.passwordTextField.text
+            formValidator.validateLoginForm(email = email, password = password)
+            uiModel
+        }.flatMapCompletable { uiModel ->
+            loginUseCase.login(
+                email = uiModel.emailTextField.text,
+                password = uiModel.passwordTextField.text
+            )
+        }
+            .doOnSubscribe { onStartLogIn() }
             .subscribe(::onLoginSuccess, ::onLoginError)
             .addToCompositeDisposable()
     }
@@ -74,20 +104,26 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun onStartLogIn(email: String, password: String) {
+    private fun onStartLogIn() {
         loginUiModelEvents.onNext {
-            it.copy(
-                emailTextField = it.emailTextField.copy(text = email),
-                passwordTextField = it.passwordTextField.copy(text = password),
-                isLoading = true
-            )
+            it.copy(isLoading = true)
         }
     }
 
     private fun onLoginError(throwable: Throwable) {
-        _loginResult.onNext(LoginResultUiModel.Error(throwable.localizedMessage ?: "Unknown"))
         loginUiModelEvents.onNext {
-            it.copy(isLoading = false)
+            transformer.updateLoadingStatus(it, false)
         }
+        if (throwable is FormError) {
+            loginUiModelEvents.onNext {
+                transformer.updateFormError(it, throwable)
+            }
+        } else {
+            _loginResult.onNext(transformer.transformErrorResult(throwable))
+        }
+    }
+
+    companion object {
+        const val DEBOUNCE_UI_MODEL = 100L
     }
 }

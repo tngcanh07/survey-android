@@ -7,4 +7,7 @@ package com.tn07.survey.domain.exceptions
 class ApiException(
     val httpCode: Int,
     cause: Throwable? = null
-) : DomainException(cause = cause)
+) : DomainException(
+    message = "code=$httpCode ${cause?.localizedMessage}",
+    cause = cause
+)

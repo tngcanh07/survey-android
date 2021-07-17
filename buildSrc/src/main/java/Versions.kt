@@ -28,6 +28,7 @@ object Versions {
     const val NAVIGATION = "2.3.5"
     const val GLIDE = "4.12.0"
     const val BLURRY = "4.0.0"
+    const val RX_BINDING = "4.0.0"
 
     const val JUNIT = "5.7.2"
     const val MOCKITO = "3.11.2"

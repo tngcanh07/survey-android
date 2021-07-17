@@ -5,5 +5,13 @@
     <string name="login_password_hint">Password</string>
     <string name="login_forgot_password_button">Forgot?</string>
     <string name="login_button">Log In</string>
+    <string name="login_processing_button">Logging In…</string>
     <string name="login_success_message">You have logged in successfully</string>
+    <string name="login_fail_message">Login failed. Email or password is not correct!</string>
+
+    <string name="error_invalid_email">Please enter a valid email address</string>
+    <string name="error_invalid_password">Please enter the password</string>
+
+    <string name="error_connection">Could not connect to the server, please check your network connection and try again</string>
+
 </resources>
