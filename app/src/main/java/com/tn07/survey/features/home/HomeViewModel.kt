@@ -40,7 +40,7 @@ class HomeViewModel @Inject constructor(
                 _homeState.onNext(HomeState.Loading)
             }
             .subscribeOn(Schedulers.io())
-            .map { HomeState.HomePage(user = it) }
+            .map(transformer::transformInitState)
             .subscribe(_homeState::onNext) {
                 _homeState.onNext(HomeState.Error("${it.javaClass.name} ${it.localizedMessage}"))
             }

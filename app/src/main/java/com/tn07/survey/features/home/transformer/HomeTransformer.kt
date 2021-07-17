@@ -1,6 +1,7 @@
 package com.tn07.survey.features.home.transformer
 
 import com.tn07.survey.domain.entities.User
+import com.tn07.survey.features.home.uimodel.HomeState
 import com.tn07.survey.features.home.uimodel.UserUiModel
 
 /**
@@ -9,4 +10,6 @@ import com.tn07.survey.features.home.uimodel.UserUiModel
  */
 interface HomeTransformer {
     fun transformUser(user: User): UserUiModel
+
+    fun transformInitState(user: UserUiModel): HomeState.HomePage
 }

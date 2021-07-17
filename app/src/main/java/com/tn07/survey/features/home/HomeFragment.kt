@@ -37,6 +37,7 @@ class HomeFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.loadingOverlay.setOnClickListener { }
         binding.navView.setNavigationItemSelectedListener {
             if (it.itemId == R.id.nav_logout) {
                 viewModel.logout()
@@ -46,7 +47,9 @@ class HomeFragment : BaseFragment() {
                 false
             }
         }
-        binding.loadingOverlay.setOnClickListener { }
+        binding.contentHomePage.userAvatar.setOnClickListener {
+            binding.drawerLayout.openDrawer(binding.navView)
+        }
 
         viewModel.loadHomePage()
     }
@@ -71,13 +74,15 @@ class HomeFragment : BaseFragment() {
     private fun bindHomeState(state: HomeState) {
         when (state) {
             HomeState.Loading -> {
-
+                binding.contentHomePage.root.visibility = View.GONE
             }
             is HomeState.HomePage -> {
+                binding.contentHomePage.root.visibility = View.VISIBLE
+                binding.contentHomePage.dateTime.text = state.dateTime
                 bindUser(state.user)
             }
             is Error -> {
-
+                binding.contentHomePage.root.visibility = View.GONE
             }
         }
     }

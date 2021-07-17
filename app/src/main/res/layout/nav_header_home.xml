@@ -21,6 +21,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:ellipsize="end"
+        android:lines="1"
         android:textAppearance="?attr/textAppearanceHeadline5"
         app:layout_constraintEnd_toStartOf="@id/user_avatar"
         app:layout_constraintStart_toStartOf="parent"

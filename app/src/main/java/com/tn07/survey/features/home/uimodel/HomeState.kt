@@ -12,6 +12,7 @@ sealed interface HomeState {
     ) : HomeState
 
     data class HomePage(
-        val user: UserUiModel
+        val user: UserUiModel,
+        val dateTime: String
     ) : HomeState
 }
