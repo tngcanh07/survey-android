@@ -1,5 +1,8 @@
 package com.tn07.survey.di.features
 
+import com.tn07.survey.features.home.transformer.HomeTransformer
+import com.tn07.survey.features.home.transformer.HomeTransformerImpl
+import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
@@ -11,5 +14,6 @@ import dagger.hilt.android.components.ViewModelComponent
 @InstallIn(ViewModelComponent::class)
 @Module
 interface HomeModule {
-
+    @Binds
+    fun bindHomeTransformer(impl: HomeTransformerImpl): HomeTransformer
 }

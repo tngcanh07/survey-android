@@ -7,7 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.tn07.survey.R
 import com.tn07.survey.databinding.FragmentHomeBinding
+import com.tn07.survey.databinding.NavHeaderHomeBinding
 import com.tn07.survey.features.base.BaseFragment
+import com.tn07.survey.features.home.uimodel.HomeState
+import com.tn07.survey.features.home.uimodel.UserUiModel
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 
@@ -17,7 +20,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
  */
 @AndroidEntryPoint
 class HomeFragment : BaseFragment() {
-    
+
     private val viewModel: HomeViewModel by viewModels()
 
     private var _binding: FragmentHomeBinding? = null
@@ -44,6 +47,8 @@ class HomeFragment : BaseFragment() {
             }
         }
         binding.loadingOverlay.setOnClickListener { }
+
+        viewModel.loadHomePage()
     }
 
     override fun onResume() {
@@ -55,6 +60,34 @@ class HomeFragment : BaseFragment() {
             .subscribe {
                 binding.loadingOverlay.visibility = it
             }
+            .addToCompositeDisposable()
+
+        viewModel.homeState
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(::bindHomeState)
+            .addToCompositeDisposable()
+    }
+
+    private fun bindHomeState(state: HomeState) {
+        when (state) {
+            HomeState.Loading -> {
+
+            }
+            is HomeState.HomePage -> {
+                bindUser(state.user)
+            }
+            is Error -> {
+
+            }
+        }
+    }
+
+    private fun bindUser(user: UserUiModel) {
+        binding.navView.getHeaderView(0)?.let {
+            with(NavHeaderHomeBinding.bind(it)) {
+                username.text = user.email
+            }
+        }
     }
 
     override fun onDestroyView() {

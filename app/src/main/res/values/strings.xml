@@ -15,4 +15,6 @@
     <string name="error_connection">Could not connect to the server, please check your network connection and try again</string>
     <string name="menu_logout_title">Logout</string>
 
+    <string name="home_today_label">Today</string>
+
 </resources>

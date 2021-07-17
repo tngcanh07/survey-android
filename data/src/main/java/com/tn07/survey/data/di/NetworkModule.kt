@@ -1,6 +1,5 @@
 package com.tn07.survey.data.di
 
-import com.google.gson.Gson
 import com.tn07.survey.data.api.ApiConfig
 import com.tn07.survey.data.api.ApiRequestAuthenticator
 import com.tn07.survey.data.api.ApiRequestInterceptor
@@ -33,14 +32,13 @@ class NetworkModule {
     @Singleton
     fun providesRetrofit(
         apiConfig: ApiConfig,
-        gson: Gson,
         okHttpClient: OkHttpClient
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(apiConfig.baseUrl)
             .client(okHttpClient)
             .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
