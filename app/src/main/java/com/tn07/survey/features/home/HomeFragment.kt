@@ -87,7 +87,8 @@ class HomeFragment : BaseFragment() {
         navigator.navigateDetailLandingPage(
             id = surveyUiModel.id,
             title = surveyUiModel.title,
-            description = surveyUiModel.description
+            description = surveyUiModel.description,
+            coverImageUrl = surveyUiModel.backgroundImageUrl
         )
     }
 

@@ -8,6 +8,7 @@ interface HomeNavigator {
     fun navigateDetailLandingPage(
         id: String,
         title: String,
-        description: String
+        description: String,
+        coverImageUrl: String
     )
 }
