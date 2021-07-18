@@ -7,6 +7,7 @@ import com.tn07.survey.data.oauth.models.AccessTokenDataModel
 import com.tn07.survey.domain.entities.AccessToken
 import com.tn07.survey.domain.entities.AnonymousToken
 import com.tn07.survey.domain.entities.Token
+import com.tn07.survey.domain.exceptions.ApiException
 import com.tn07.survey.domain.repositories.OAuthRepository
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Maybe
@@ -14,6 +15,7 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import javax.inject.Inject
+import javax.net.ssl.HttpsURLConnection
 
 /**
  * Created by toannguyen
@@ -51,6 +53,12 @@ class OAuthRepositoryImpl @Inject constructor(
             .doOnSuccess(localDataSource::storeAccessToken)
             .map(AccessTokenDataModel::toAccessToken)
             .doOnSuccess(tokenSubject::onNext)
+            .doOnError {
+                // token is no longer valid, e.g it has been removed from backend
+                if ((it as? ApiException)?.httpCode == HttpsURLConnection.HTTP_BAD_REQUEST) {
+                    localDataSource.clearAccessToken()
+                }
+            }
     }
 
     override fun logout(): Completable {

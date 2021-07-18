@@ -4,17 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.viewModels
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.tn07.survey.R
 import com.tn07.survey.databinding.FragmentHomeBinding
 import com.tn07.survey.databinding.NavHeaderHomeBinding
 import com.tn07.survey.features.base.BaseFragment
 import com.tn07.survey.features.base.toast
-import com.tn07.survey.features.home.uimodel.HomeState
 import com.tn07.survey.features.home.uimodel.LogoutResultUiModel
+import com.tn07.survey.features.home.uimodel.SurveyLoadingState
 import com.tn07.survey.features.home.uimodel.SurveyUiModel
 import com.tn07.survey.features.home.uimodel.UserUiModel
+import com.tn07.survey.features.home.uimodel.isFirstPage
 import com.tn07.survey.features.home.view.DepthPageTransformer
 import com.tn07.survey.features.home.view.SurveyAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,6 +39,8 @@ class HomeFragment : BaseFragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = requireNotNull(_binding)
 
+    private val surveyAdapter: SurveyAdapter = SurveyAdapter(this::onOpenSurveyDetail)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,38 +52,56 @@ class HomeFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.loadingOverlay.setOnClickListener { }
-        binding.navView.setNavigationItemSelectedListener {
-            if (it.itemId == R.id.nav_logout) {
-                logout()
-                binding.drawerLayout.closeDrawer(binding.navView)
-                true
-            } else {
-                false
+        with(binding) {
+            loadingOverlay.setOnClickListener { }
+            navView.setNavigationItemSelectedListener {
+                if (it.itemId == R.id.nav_logout) {
+                    logout()
+                    binding.drawerLayout.closeDrawer(binding.navView)
+                    true
+                } else {
+                    false
+                }
             }
-        }
-        binding.contentHomePage.userAvatar.setOnClickListener {
-            binding.drawerLayout.openDrawer(binding.navView)
+            with(contentHomePage) {
+                userAvatar.setOnClickListener {
+                    binding.drawerLayout.openDrawer(binding.navView)
+                }
+                swipeRefreshLayout.setOnRefreshListener {
+                    viewModel.refreshSurveys()
+                }
+
+                surveyViewPager.adapter = surveyAdapter
+                surveyViewPager.setPageTransformer(DepthPageTransformer())
+                surveyViewPager.registerOnPageChangeCallback(
+                    object : ViewPager2.OnPageChangeCallback() {
+                        override fun onPageSelected(position: Int) {
+                            viewModel.setCurrentPage(position)
+                        }
+                    })
+            }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.homeState
+        viewModel.user
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(::bindHomeState)
+            .subscribe(::bindUser)
             .addToCompositeDisposable()
 
-        viewModel.surveyListResult
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { pagingData ->
-                SurveyAdapter(::onOpenSurveyDetail).also {
-                    it.submitData(lifecycle, pagingData)
-                    binding.contentHomePage.surveyViewPager.adapter = it
-                }
-            }
+        surveyAdapter.bindDataSource(viewModel.surveyListResult)
             .addToCompositeDisposable()
-        binding.contentHomePage.surveyViewPager.setPageTransformer(DepthPageTransformer())
+
+        viewModel.user
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(::bindUser)
+            .addToCompositeDisposable()
+
+        viewModel.surveyLoadingState
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(::bindSurveyLoadingState)
+            .addToCompositeDisposable()
     }
 
     private fun onOpenSurveyDetail(surveyUiModel: SurveyUiModel) {
@@ -105,21 +128,27 @@ class HomeFragment : BaseFragment() {
             .addToCompositeDisposable()
     }
 
-    private fun bindHomeState(state: HomeState) {
+    private fun bindSurveyLoadingState(state: SurveyLoadingState) {
         with(binding) {
             when (state) {
-                HomeState.Loading -> {
-                    contentHomePage.root.visibility = View.GONE
-                    surveyLoadingLayout.root.visibility = View.VISIBLE
+                is SurveyLoadingState.Loading -> {
+                    if (state.isFirstPage) {
+                        contentHomePage.root.visibility = View.GONE
+                        surveyLoadingLayout.root.visibility = View.VISIBLE
+                    }
                 }
-                is HomeState.HomePage -> {
+                is SurveyLoadingState.LoadSuccess -> {
                     contentHomePage.root.visibility = View.VISIBLE
                     surveyLoadingLayout.root.visibility = View.GONE
-                    contentHomePage.dateTime.text = state.dateTime
-                    bindUser(state.user)
+                    contentHomePage.dateTime.text = viewModel.todayDateTime
+                    contentHomePage.swipeRefreshLayout.isRefreshing = false
                 }
-                is HomeState.Error -> {
-                    contentHomePage.root.visibility = View.GONE
+                is SurveyLoadingState.LoadError -> {
+                    if (state.isFirstPage) {
+                        contentHomePage.root.visibility = View.GONE
+                        surveyLoadingLayout.root.visibility = View.GONE
+                        contentHomePage.swipeRefreshLayout.isRefreshing = false
+                    }
                 }
             }
         }
@@ -129,18 +158,18 @@ class HomeFragment : BaseFragment() {
         binding.navView.getHeaderView(0)?.let {
             with(NavHeaderHomeBinding.bind(it)) {
                 username.text = user.email
-                Glide.with(this@HomeFragment)
-                    .load(user.avatar)
-                    .placeholder(R.drawable.ic_avatar_placeholder)
-                    .error(R.drawable.ic_avatar_placeholder)
-                    .into(userAvatar)
+                loadUserAvatar(user.avatar, userAvatar)
             }
         }
+        loadUserAvatar(user.avatar, binding.contentHomePage.userAvatar)
+    }
+
+    private fun loadUserAvatar(avatar: String?, imageView: ImageView) {
         Glide.with(this@HomeFragment)
-            .load(user.avatar)
+            .load(avatar)
             .placeholder(R.drawable.ic_avatar_placeholder)
             .error(R.drawable.ic_avatar_placeholder)
-            .into(binding.contentHomePage.userAvatar)
+            .into(imageView)
     }
 
     override fun onDestroyView() {

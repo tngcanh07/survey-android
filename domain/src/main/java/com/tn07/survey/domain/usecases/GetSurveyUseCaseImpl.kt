@@ -1,5 +1,6 @@
 package com.tn07.survey.domain.usecases
 
+import com.tn07.survey.domain.entities.Pageable
 import com.tn07.survey.domain.entities.Survey
 import com.tn07.survey.domain.repositories.SurveyRepository
 import io.reactivex.rxjava3.core.Single
@@ -16,7 +17,7 @@ class GetSurveyUseCaseImpl @Inject constructor(
     override fun getSurveys(
         page: Int,
         pageSize: Int
-    ): Single<List<Survey>> {
+    ): Single<Pageable<Survey>> {
         return repository.getSurveys(
             page = page,
             pageSize = pageSize

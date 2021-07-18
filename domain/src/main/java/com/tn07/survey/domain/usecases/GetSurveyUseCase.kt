@@ -1,5 +1,6 @@
 package com.tn07.survey.domain.usecases
 
+import com.tn07.survey.domain.entities.Pageable
 import com.tn07.survey.domain.entities.Survey
 import io.reactivex.rxjava3.core.Single
 
@@ -11,5 +12,5 @@ interface GetSurveyUseCase {
     fun getSurveys(
         page: Int,
         pageSize: Int
-    ): Single<List<Survey>>
+    ): Single<Pageable<Survey>>
 }

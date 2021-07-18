@@ -14,8 +14,6 @@ object Libs {
     const val NAVIGATION_UI = "androidx.navigation:navigation-ui-ktx:${Versions.NAVIGATION}"
     const val SWIPE_REFRESH_LAYOUT =
         "androidx.swiperefreshlayout:swiperefreshlayout:${Versions.SWIPE_REFRESH_LAYOUT}"
-    const val PAGING_RUNTIME = "androidx.paging:paging-runtime:${Versions.PAGING}"
-    const val PAGING_RXJAVA = "androidx.paging:paging-rxjava3:${Versions.PAGING}"
     const val BLURRY = "jp.wasabeef:blurry:${Versions.BLURRY}"
     const val RX_BINDING = "com.jakewharton.rxbinding4:rxbinding:${Versions.RX_BINDING}"
     const val SHIMMER = "com.facebook.shimmer:shimmer:${Versions.SHIMMER}"

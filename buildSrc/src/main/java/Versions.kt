@@ -23,7 +23,6 @@ object Versions {
 
     const val APP_COMPAT = "1.3.0"
     const val MATERIAL = "1.3.0"
-    const val PAGING = "3.0.0"
     const val SWIPE_REFRESH_LAYOUT = "1.1.0"
     const val CONSTRAINT_LAYOUT = "2.0.4"
     const val NAVIGATION = "2.3.5"
