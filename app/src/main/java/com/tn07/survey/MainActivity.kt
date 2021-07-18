@@ -7,11 +7,15 @@ import com.tn07.survey.features.home.HomeFragment
 import com.tn07.survey.features.login.LoginFragment
 import com.tn07.survey.features.login.LoginNavigator
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), LoginNavigator {
 
     private val viewModel by viewModels<MainViewModel>()
+
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +25,19 @@ class MainActivity : BaseActivity(), LoginNavigator {
         } else {
             openHomePage()
         }
+
+        viewModel.loginStatusObservable
+            .subscribeOn(AndroidSchedulers.mainThread())
+            .scan(::isUserLoggedOut)
+            .filter { it }
+            .subscribe {
+                openLoginForm()
+            }
+            .let(compositeDisposable::add)
+    }
+
+    private fun isUserLoggedOut(currentStatus: Boolean, nextStatus: Boolean): Boolean {
+        return currentStatus && !nextStatus
     }
 
     override fun navigateLoginSuccess() {
@@ -37,5 +54,10 @@ class MainActivity : BaseActivity(), LoginNavigator {
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, HomeFragment())
             .commit()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.clear()
     }
 }

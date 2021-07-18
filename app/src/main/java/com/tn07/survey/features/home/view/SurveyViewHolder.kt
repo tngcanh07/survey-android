@@ -3,6 +3,7 @@ package com.tn07.survey.features.home.view
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.tn07.survey.R
 import com.tn07.survey.databinding.ItemSurveyBinding
 import com.tn07.survey.features.home.uimodel.SurveyUiModel
@@ -21,9 +22,14 @@ class SurveyViewHolder(
     private var uiModel: SurveyUiModel? = null
 
     fun bind(uiModel: SurveyUiModel) {
+        this.uiModel = null
         with(binding) {
             surveyTitle.text = uiModel.title
             surveyDescription.text = uiModel.description
+            Glide.with(backgroundImage)
+                .load(uiModel.backgroundImageUrl)
+                .into(backgroundImage)
         }
+        this.uiModel = uiModel
     }
 }

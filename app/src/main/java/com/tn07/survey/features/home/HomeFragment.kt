@@ -5,11 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import com.bumptech.glide.Glide
 import com.tn07.survey.R
 import com.tn07.survey.databinding.FragmentHomeBinding
 import com.tn07.survey.databinding.NavHeaderHomeBinding
 import com.tn07.survey.features.base.BaseFragment
+import com.tn07.survey.features.base.toast
 import com.tn07.survey.features.home.uimodel.HomeState
+import com.tn07.survey.features.home.uimodel.LogoutResultUiModel
 import com.tn07.survey.features.home.uimodel.UserUiModel
 import com.tn07.survey.features.home.view.DepthPageTransformer
 import com.tn07.survey.features.home.view.SurveyAdapter
@@ -42,7 +45,7 @@ class HomeFragment : BaseFragment() {
         binding.loadingOverlay.setOnClickListener { }
         binding.navView.setNavigationItemSelectedListener {
             if (it.itemId == R.id.nav_logout) {
-                viewModel.logout()
+                logout()
                 binding.drawerLayout.closeDrawer(binding.navView)
                 true
             } else {
@@ -58,15 +61,6 @@ class HomeFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-
-        viewModel.loadingState
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { if (it) View.VISIBLE else View.GONE }
-            .subscribe {
-                binding.loadingOverlay.visibility = it
-            }
-            .addToCompositeDisposable()
-
         viewModel.homeState
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(::bindHomeState)
@@ -81,6 +75,21 @@ class HomeFragment : BaseFragment() {
                 }
             }
         binding.contentHomePage.surveyViewPager.setPageTransformer(DepthPageTransformer())
+    }
+
+    private fun logout() {
+        viewModel.logout()
+            .doOnSubscribe {
+                binding.loadingOverlay.visibility = View.VISIBLE
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { result: LogoutResultUiModel ->
+                binding.loadingOverlay.visibility = View.GONE
+                if (result is LogoutResultUiModel.Error) {
+                    toast("Failed: $result")
+                }
+            }
+            .addToCompositeDisposable()
     }
 
     private fun bindHomeState(state: HomeState) {
@@ -103,8 +112,18 @@ class HomeFragment : BaseFragment() {
         binding.navView.getHeaderView(0)?.let {
             with(NavHeaderHomeBinding.bind(it)) {
                 username.text = user.email
+                Glide.with(this@HomeFragment)
+                    .load(user.avatar)
+                    .placeholder(R.drawable.ic_avatar_placeholder)
+                    .error(R.drawable.ic_avatar_placeholder)
+                    .into(userAvatar)
             }
         }
+        Glide.with(this@HomeFragment)
+            .load(user.avatar)
+            .placeholder(R.drawable.ic_avatar_placeholder)
+            .error(R.drawable.ic_avatar_placeholder)
+            .into(binding.contentHomePage.userAvatar)
     }
 
     override fun onDestroyView() {
