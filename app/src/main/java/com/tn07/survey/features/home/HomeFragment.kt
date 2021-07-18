@@ -13,11 +13,10 @@ import com.tn07.survey.databinding.FragmentHomeBinding
 import com.tn07.survey.databinding.NavHeaderHomeBinding
 import com.tn07.survey.features.base.BaseFragment
 import com.tn07.survey.features.base.toast
+import com.tn07.survey.features.home.uimodel.HomeState
 import com.tn07.survey.features.home.uimodel.LogoutResultUiModel
-import com.tn07.survey.features.home.uimodel.SurveyLoadingState
 import com.tn07.survey.features.home.uimodel.SurveyUiModel
 import com.tn07.survey.features.home.uimodel.UserUiModel
-import com.tn07.survey.features.home.uimodel.isFirstPage
 import com.tn07.survey.features.home.view.DepthPageTransformer
 import com.tn07.survey.features.home.view.SurveyAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,7 +38,7 @@ class HomeFragment : BaseFragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = requireNotNull(_binding)
 
-    private val surveyAdapter: SurveyAdapter = SurveyAdapter(this::onOpenSurveyDetail)
+    private val surveyAdapter = SurveyAdapter(this::onOpenSurveyDetail)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,13 +69,17 @@ class HomeFragment : BaseFragment() {
                 swipeRefreshLayout.setOnRefreshListener {
                     viewModel.refreshSurveys()
                 }
-
                 surveyViewPager.adapter = surveyAdapter
                 surveyViewPager.setPageTransformer(DepthPageTransformer())
                 surveyViewPager.registerOnPageChangeCallback(
                     object : ViewPager2.OnPageChangeCallback() {
                         override fun onPageSelected(position: Int) {
                             viewModel.setCurrentPage(position)
+                        }
+
+                        override fun onPageScrollStateChanged(state: Int) {
+                            super.onPageScrollStateChanged(state)
+                            swipeRefreshLayout.isEnabled = state == ViewPager2.SCROLL_STATE_IDLE
                         }
                     })
             }
@@ -98,9 +101,9 @@ class HomeFragment : BaseFragment() {
             .subscribe(::bindUser)
             .addToCompositeDisposable()
 
-        viewModel.surveyLoadingState
+        viewModel.surveyLoadingEvents
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(::bindSurveyLoadingState)
+            .subscribe(::bindSurveyLoadingEvent)
             .addToCompositeDisposable()
     }
 
@@ -128,39 +131,37 @@ class HomeFragment : BaseFragment() {
             .addToCompositeDisposable()
     }
 
-    private fun bindSurveyLoadingState(state: SurveyLoadingState) {
+    private fun bindSurveyLoadingEvent(event: HomeState) {
         with(binding) {
-            when (state) {
-                is SurveyLoadingState.Loading -> {
-                    if (state.isFirstPage) {
-                        contentHomePage.root.visibility = View.GONE
-                        surveyLoadingLayout.root.visibility = View.VISIBLE
-                    }
+            when (event) {
+                HomeState.Loading -> {
+                    contentHomePage.root.visibility = View.INVISIBLE
+                    surveyLoadingLayout.root.visibility = View.VISIBLE
+                    contentHomePage.swipeRefreshLayout.isRefreshing = false
+                    contentHomePage.swipeRefreshLayout.isEnabled = false
                 }
-                is SurveyLoadingState.LoadSuccess -> {
+                HomeState.Success -> {
                     contentHomePage.root.visibility = View.VISIBLE
                     surveyLoadingLayout.root.visibility = View.GONE
-                    contentHomePage.dateTime.text = viewModel.todayDateTime
-                    contentHomePage.swipeRefreshLayout.isRefreshing = false
+                    contentHomePage.swipeRefreshLayout.isEnabled = true
                 }
-                is SurveyLoadingState.LoadError -> {
-                    if (state.isFirstPage) {
-                        contentHomePage.root.visibility = View.GONE
-                        surveyLoadingLayout.root.visibility = View.GONE
-                        contentHomePage.swipeRefreshLayout.isRefreshing = false
-                    }
+                HomeState.Error -> {
+                    contentHomePage.root.visibility = View.INVISIBLE
+                    surveyLoadingLayout.root.visibility = View.GONE
+                    contentHomePage.swipeRefreshLayout.isEnabled = true
                 }
             }
+            contentHomePage.dateTime.text = viewModel.todayDateTime
         }
     }
 
     private fun bindUser(user: UserUiModel) {
-        binding.navView.getHeaderView(0)?.let {
-            with(NavHeaderHomeBinding.bind(it)) {
+        binding.navView.getHeaderView(0)
+            ?.let(NavHeaderHomeBinding::bind)
+            ?.apply {
                 username.text = user.email
                 loadUserAvatar(user.avatar, userAvatar)
             }
-        }
         loadUserAvatar(user.avatar, binding.contentHomePage.userAvatar)
     }
 

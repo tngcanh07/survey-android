@@ -21,10 +21,7 @@ class SurveyAdapter(
     private var items = emptyList<SurveyUiModel>()
 
     fun bindDataSource(dataSource: Flowable<List<SurveyUiModel>>): Disposable {
-        return dataSource.filter {
-            println(">>> filter ${it != items} ${it.size}")
-            it != items
-        }
+        return dataSource.filter { it != items }
             .map { newList ->
                 val oldList = items
                 val result = DiffUtil.calculateDiff(SurveyDiffCallback(oldList, newList))
