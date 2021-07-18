@@ -2,8 +2,8 @@ package com.tn07.survey.features.home.pagingsource
 
 import androidx.paging.PagingState
 import androidx.paging.rxjava3.RxPagingSource
-import com.tn07.survey.domain.exceptions.DomainException
-import com.tn07.survey.features.home.uimodel.SurveyUiModel
+import com.tn07.survey.domain.entities.Survey
+import com.tn07.survey.domain.usecases.GetSurveyUseCase
 import io.reactivex.rxjava3.core.Single
 
 /**
@@ -11,49 +11,27 @@ import io.reactivex.rxjava3.core.Single
  * Jul 17, 2021 at 23:04
  */
 class SurveyPagingSource(
+    private val getSurveyUseCase: GetSurveyUseCase,
     private val startPageIndex: Int
-) : RxPagingSource<Int, SurveyUiModel>() {
-    override fun getRefreshKey(state: PagingState<Int, SurveyUiModel>): Int? {
+) : RxPagingSource<Int, Survey>() {
+    override fun getRefreshKey(state: PagingState<Int, Survey>): Int? {
         return null
     }
 
-    override fun loadSingle(params: LoadParams<Int>): Single<LoadResult<Int, SurveyUiModel>> {
-        val page = params.key ?: startPageIndex
-        return try {
-            val items = listOf(
-                SurveyUiModel(
-                    "id1",
-                    "Survey title1",
-                    "description",
-                    "imageurl"
-                ),
-                SurveyUiModel(
-                    "id2",
-                    "Survey title2",
-                    "description",
-                    "imageurl"
-                ),
-                SurveyUiModel(
-                    "id3",
-                    "Survey title3",
-                    "description",
-                    "imageurl"
-                ),
-                SurveyUiModel(
-                    "id4",
-                    "Survey title4",
-                    "description",
-                    "imageurl"
+    override fun loadSingle(params: LoadParams<Int>): Single<LoadResult<Int, Survey>> {
+        val pageNumber = params.key ?: startPageIndex
+        val pageSize = params.loadSize
+        
+        return getSurveyUseCase.getSurveys(page = pageNumber, pageSize = pageSize)
+            .map<LoadResult<Int, Survey>> {
+                LoadResult.Page(
+                    data = it,
+                    prevKey = if (pageNumber <= startPageIndex) null else pageNumber - 1,
+                    nextKey = if (it.size < pageSize) null else pageNumber + 1
                 )
-            )
-            val result = LoadResult.Page(
-                data = items,
-                prevKey = if (page <= startPageIndex) null else page - 1,
-                nextKey = if (items.size < params.loadSize) null else page + 1
-            )
-            Single.just(result)
-        } catch (e: DomainException) {
-            Single.just(LoadResult.Error(e))
-        }
+            }
+            .onErrorResumeNext {
+                Single.just(LoadResult.Error(it))
+            }
     }
 }

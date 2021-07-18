@@ -1,7 +1,9 @@
 package com.tn07.survey.features.home.transformer
 
+import com.tn07.survey.domain.entities.Survey
 import com.tn07.survey.domain.entities.User
 import com.tn07.survey.features.home.uimodel.HomeState
+import com.tn07.survey.features.home.uimodel.SurveyUiModel
 import com.tn07.survey.features.home.uimodel.UserUiModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -19,6 +21,15 @@ class HomeTransformerImpl @Inject constructor() : HomeTransformer {
         return UserUiModel(
             email = user.email,
             avatar = user.avatarUrl
+        )
+    }
+
+    override fun transformSurvey(survey: Survey): SurveyUiModel {
+        return SurveyUiModel(
+            id = survey.id,
+            title = survey.title,
+            description = survey.description,
+            backgroundImageUrl = survey.coverImageUrl
         )
     }
 

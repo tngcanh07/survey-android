@@ -3,7 +3,9 @@ package com.tn07.survey.features.home
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.map
 import androidx.paging.rxjava3.flowable
+import com.tn07.survey.domain.usecases.GetSurveyUseCase
 import com.tn07.survey.domain.usecases.GetUserUseCase
 import com.tn07.survey.domain.usecases.LogoutUseCase
 import com.tn07.survey.features.base.BaseViewModel
@@ -27,6 +29,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getUserUseCase: GetUserUseCase,
     private val logoutUseCase: LogoutUseCase,
+    private val getSurveyUseCase: GetSurveyUseCase,
     private val transformer: HomeTransformer
 ) : BaseViewModel() {
     private val userObservable: Observable<UserUiModel>
@@ -84,16 +87,22 @@ class HomeViewModel @Inject constructor(
 
     val surveyListResult: Flowable<PagingData<SurveyUiModel>> = Pager(pagingConfig) {
         SurveyPagingSource(
+            getSurveyUseCase = getSurveyUseCase,
             startPageIndex = START_PAGE_INDEX
         ).also {
             currentPagingSource = it
         }
-    }.flowable
+    }
+        .flowable
+        .map {
+            it.map(transformer::transformSurvey)
+        }
+
 
     companion object {
         const val START_PAGE_INDEX = 1
-        const val PAGE_SIZE = 100
-        const val PREFETCH_DISTANCE = 10
-        const val MAX_CAPACITY = 1000
+        const val PAGE_SIZE = 2
+        const val PREFETCH_DISTANCE = 1
+        const val MAX_CAPACITY = 20
     }
 }

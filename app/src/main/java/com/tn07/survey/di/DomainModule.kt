@@ -1,5 +1,7 @@
 package com.tn07.survey.di
 
+import com.tn07.survey.domain.usecases.GetSurveyUseCase
+import com.tn07.survey.domain.usecases.GetSurveyUseCaseImpl
 import com.tn07.survey.domain.usecases.GetTokenUseCase
 import com.tn07.survey.domain.usecases.GetTokenUseCaseImpl
 import com.tn07.survey.domain.usecases.GetUserUseCase
@@ -31,4 +33,7 @@ interface DomainModule {
 
     @Binds
     fun getUserUseCase(useCase: GetUserUseCaseImpl): GetUserUseCase
+
+    @Binds
+    fun getSurveyUseCase(useCase: GetSurveyUseCaseImpl): GetSurveyUseCase
 }
