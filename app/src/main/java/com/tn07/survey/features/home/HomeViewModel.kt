@@ -1,9 +1,11 @@
 package com.tn07.survey.features.home
 
+import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
+import androidx.paging.rxjava3.cachedIn
 import androidx.paging.rxjava3.flowable
 import com.tn07.survey.domain.usecases.GetSurveyUseCase
 import com.tn07.survey.domain.usecases.GetUserUseCase
@@ -16,6 +18,7 @@ import com.tn07.survey.features.home.uimodel.LogoutResultUiModel
 import com.tn07.survey.features.home.uimodel.SurveyUiModel
 import com.tn07.survey.features.home.uimodel.UserUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
@@ -43,7 +46,21 @@ class HomeViewModel @Inject constructor(
     val homeState: Observable<HomeState>
         get() = _homeState.distinctUntilChanged()
 
-    fun loadHomePage() {
+    private var currentSurveyPagingSource: SurveyPagingSource? = null
+
+    private val _surveyListResult: BehaviorSubject<PagingData<SurveyUiModel>> =
+        BehaviorSubject.create()
+    val surveyListResult: Flowable<PagingData<SurveyUiModel>>
+        get() = _surveyListResult.toFlowable(BackpressureStrategy.LATEST)
+
+    private val surveyPagingConfig: PagingConfig = PagingConfig(
+        pageSize = PAGE_SIZE,
+        maxSize = MAX_CAPACITY,
+        initialLoadSize = PAGE_SIZE,
+        prefetchDistance = PREFETCH_DISTANCE
+    )
+
+    init {
         userObservable
             .doOnSubscribe {
                 _homeState.onNext(HomeState.Loading)
@@ -54,6 +71,23 @@ class HomeViewModel @Inject constructor(
                 _homeState.onNext(HomeState.Error("${it.javaClass.name} ${it.localizedMessage}"))
             }
             .addToCompositeDisposable()
+
+        Pager(surveyPagingConfig) {
+            println("new dataSource")
+            SurveyPagingSource(
+                getSurveyUseCase = getSurveyUseCase,
+                startPageIndex = START_PAGE_INDEX
+            ).also {
+                currentSurveyPagingSource = it
+            }
+        }
+            .flowable
+            .cachedIn(viewModelScope)
+            .map {
+                it.map(transformer::transformSurvey)
+            }
+            .subscribe(_surveyListResult::onNext)
+            .addToCompositeDisposable()
     }
 
     fun logout(): Single<LogoutResultUiModel> {
@@ -63,28 +97,6 @@ class HomeViewModel @Inject constructor(
                 Single.just(LogoutResultUiModel.Error)
             }
     }
-
-    private var currentSurveyPagingSource: SurveyPagingSource? = null
-    private val surveyPagingConfig: PagingConfig = PagingConfig(
-        pageSize = PAGE_SIZE,
-        maxSize = MAX_CAPACITY,
-        initialLoadSize = PAGE_SIZE,
-        prefetchDistance = PREFETCH_DISTANCE
-    )
-
-    val surveyListResult: Flowable<PagingData<SurveyUiModel>> = Pager(surveyPagingConfig) {
-        SurveyPagingSource(
-            getSurveyUseCase = getSurveyUseCase,
-            startPageIndex = START_PAGE_INDEX
-        ).also {
-            currentSurveyPagingSource = it
-        }
-    }
-        .flowable
-        .map {
-            it.map(transformer::transformSurvey)
-        }
-
 
     companion object {
         const val START_PAGE_INDEX = 1

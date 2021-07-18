@@ -60,8 +60,6 @@ class HomeFragment : BaseFragment() {
         binding.contentHomePage.userAvatar.setOnClickListener {
             binding.drawerLayout.openDrawer(binding.navView)
         }
-
-        viewModel.loadHomePage()
     }
 
     override fun onResume() {

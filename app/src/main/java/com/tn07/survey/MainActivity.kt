@@ -36,17 +36,12 @@ class MainActivity : BaseActivity(), LoginNavigator, HomeNavigator, DetailLandin
 
         viewModel.loginStatusObservable
             .skip(1)
-            .scan(::isUserLoggedOut)
-            .filter { it }
+            .filter { !it }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 startLoginNavigation()
             }
             .let(compositeDisposable::add)
-    }
-
-    private fun isUserLoggedOut(currentStatus: Boolean, nextStatus: Boolean): Boolean {
-        return currentStatus && !nextStatus
     }
 
     override fun navigateLoginSuccess() {
@@ -82,6 +77,10 @@ class MainActivity : BaseActivity(), LoginNavigator, HomeNavigator, DetailLandin
 
     private fun startSurveyNavigation() {
         navController.setGraph(R.navigation.survey_navigation)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
     override fun onDestroy() {
