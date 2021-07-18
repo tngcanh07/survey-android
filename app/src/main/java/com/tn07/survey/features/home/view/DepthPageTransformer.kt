@@ -3,7 +3,7 @@ package com.tn07.survey.features.home.view
 import android.view.View
 import androidx.viewpager2.widget.ViewPager2
 
-private const val MIN_SCALE = 0.75f
+private const val MIN_SCALE = 1f
 
 /**
  * See https://developer.android.com/training/animation/screen-slide-2#depth-page
@@ -20,7 +20,7 @@ class DepthPageTransformer : ViewPager2.PageTransformer {
                 position <= 0 -> { // [-1,0]
                     // Use the default slide transition when moving to the left page
                     alpha = 1f
-                    translationX = 0f
+                    translationX = pageWidth * -position
                     scaleX = 1f
                     scaleY = 1f
                 }

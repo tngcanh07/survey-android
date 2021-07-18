@@ -30,6 +30,7 @@ object Versions {
     const val BLURRY = "4.0.0"
     const val RX_BINDING = "4.0.0"
     const val SHIMMER = "0.5.0"
+    const val SCROLLING_PAGER_INDICATOR = "1.2.1"
 
     const val JUNIT = "5.7.2"
     const val MOCKITO = "3.11.2"

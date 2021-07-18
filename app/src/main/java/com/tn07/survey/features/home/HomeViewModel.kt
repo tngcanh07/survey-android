@@ -148,7 +148,7 @@ class HomeViewModel @Inject constructor(
     companion object {
         private const val FIRST_PAGE_INDEX = 1
         private const val PAGE_SIZE = 5
-        private const val PREFETCH_OFFSET = 1
+        private const val PREFETCH_OFFSET = 2
     }
 }
 
