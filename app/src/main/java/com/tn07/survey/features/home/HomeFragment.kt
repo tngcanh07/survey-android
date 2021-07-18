@@ -13,11 +13,13 @@ import com.tn07.survey.features.base.BaseFragment
 import com.tn07.survey.features.base.toast
 import com.tn07.survey.features.home.uimodel.HomeState
 import com.tn07.survey.features.home.uimodel.LogoutResultUiModel
+import com.tn07.survey.features.home.uimodel.SurveyUiModel
 import com.tn07.survey.features.home.uimodel.UserUiModel
 import com.tn07.survey.features.home.view.DepthPageTransformer
 import com.tn07.survey.features.home.view.SurveyAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import javax.inject.Inject
 
 /**
  * Created by toannguyen
@@ -27,6 +29,9 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 class HomeFragment : BaseFragment() {
 
     private val viewModel: HomeViewModel by viewModels()
+
+    @Inject
+    lateinit var navigator: HomeNavigator
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = requireNotNull(_binding)
@@ -69,12 +74,21 @@ class HomeFragment : BaseFragment() {
         viewModel.surveyListResult
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { pagingData ->
-                SurveyAdapter().also {
+                SurveyAdapter(::onOpenSurveyDetail).also {
                     it.submitData(lifecycle, pagingData)
                     binding.contentHomePage.surveyViewPager.adapter = it
                 }
             }
+            .addToCompositeDisposable()
         binding.contentHomePage.surveyViewPager.setPageTransformer(DepthPageTransformer())
+    }
+
+    private fun onOpenSurveyDetail(surveyUiModel: SurveyUiModel) {
+        navigator.navigateDetailLandingPage(
+            id = surveyUiModel.id,
+            title = surveyUiModel.title,
+            description = surveyUiModel.description
+        )
     }
 
     private fun logout() {
@@ -93,17 +107,21 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun bindHomeState(state: HomeState) {
-        when (state) {
-            HomeState.Loading -> {
-                binding.contentHomePage.root.visibility = View.GONE
-            }
-            is HomeState.HomePage -> {
-                binding.contentHomePage.root.visibility = View.VISIBLE
-                binding.contentHomePage.dateTime.text = state.dateTime
-                bindUser(state.user)
-            }
-            is Error -> {
-                binding.contentHomePage.root.visibility = View.GONE
+        with(binding) {
+            when (state) {
+                HomeState.Loading -> {
+                    contentHomePage.root.visibility = View.GONE
+                    surveyLoadingLayout.root.visibility = View.VISIBLE
+                }
+                is HomeState.HomePage -> {
+                    contentHomePage.root.visibility = View.VISIBLE
+                    surveyLoadingLayout.root.visibility = View.GONE
+                    contentHomePage.dateTime.text = state.dateTime
+                    bindUser(state.user)
+                }
+                is HomeState.Error -> {
+                    contentHomePage.root.visibility = View.GONE
+                }
             }
         }
     }

@@ -27,7 +27,7 @@
         android:ellipsize="end"
         android:lines="2"
         android:maxLines="2"
-        app:layout_constraintBottom_toTopOf="@id/more_detail_fab"
+        app:layout_constraintBottom_toTopOf="@id/open_detail_fab"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="@tools:sample/lorem/random" />
@@ -41,18 +41,18 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:ellipsize="end"
         android:maxLines="2"
-        app:layout_constraintEnd_toStartOf="@id/more_detail_fab"
+        app:layout_constraintEnd_toStartOf="@id/open_detail_fab"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/survey_title"
         tools:text="@tools:sample/lorem/random" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/more_detail_fab"
+        android:id="@+id/open_detail_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_marginBottom="54dp"
-        android:src="@drawable/ic_avatar_placeholder"
+        android:src="@drawable/ic_arrow_right"
         app:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -34,6 +34,7 @@ class HomeViewModel @Inject constructor(
     private val getSurveyUseCase: GetSurveyUseCase,
     private val transformer: HomeTransformer
 ) : BaseViewModel() {
+
     private val userObservable: Observable<UserUiModel>
         get() = getUserUseCase.getUserObservable()
             .map(transformer::transformUser)

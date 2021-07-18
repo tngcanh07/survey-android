@@ -8,12 +8,15 @@ import com.tn07.survey.features.home.uimodel.SurveyUiModel
  * Created by toannguyen
  * Jul 17, 2021 at 22:34
  */
-class SurveyAdapter() : PagingDataAdapter<SurveyUiModel, SurveyViewHolder>(SurveyDiffCallback()) {
+class SurveyAdapter(
+    private val onOpenSurveyDetail: (SurveyUiModel) -> Unit
+
+) : PagingDataAdapter<SurveyUiModel, SurveyViewHolder>(SurveyDiffCallback()) {
     override fun onBindViewHolder(holder: SurveyViewHolder, position: Int) {
         getItem(position)?.let(holder::bind)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SurveyViewHolder {
-        return SurveyViewHolder(parent)
+        return SurveyViewHolder(parent, onOpenSurveyDetail)
     }
 }

@@ -3,7 +3,10 @@ package com.tn07.survey
 import android.os.Bundle
 import androidx.activity.viewModels
 import com.tn07.survey.features.base.BaseActivity
+import com.tn07.survey.features.detaillandingpage.DetailLandingPageFragment
+import com.tn07.survey.features.detaillandingpage.DetailLandingPageNavigator
 import com.tn07.survey.features.home.HomeFragment
+import com.tn07.survey.features.home.HomeNavigator
 import com.tn07.survey.features.login.LoginFragment
 import com.tn07.survey.features.login.LoginNavigator
 import dagger.hilt.android.AndroidEntryPoint
@@ -11,7 +14,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity(), LoginNavigator {
+class MainActivity : BaseActivity(), LoginNavigator, HomeNavigator, DetailLandingPageNavigator {
 
     private val viewModel by viewModels<MainViewModel>()
 
@@ -28,6 +31,7 @@ class MainActivity : BaseActivity(), LoginNavigator {
 
         viewModel.loginStatusObservable
             .subscribeOn(AndroidSchedulers.mainThread())
+            .skip(1)
             .scan(::isUserLoggedOut)
             .filter { it }
             .subscribe {
@@ -42,6 +46,20 @@ class MainActivity : BaseActivity(), LoginNavigator {
 
     override fun navigateLoginSuccess() {
         openHomePage()
+    }
+
+    override fun navigateDetailLandingPage(id: String, title: String, description: String) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, DetailLandingPageFragment())
+            .commit()
+    }
+
+    override fun navigateBackFromLandingPage() {
+        openHomePage()
+    }
+
+    override fun navigateToSurveyDetail(surveyId: String) {
+        TODO("Not yet implemented")
     }
 
     private fun openLoginForm() {

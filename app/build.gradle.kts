@@ -111,6 +111,7 @@ dependencies {
     implementation(Libs.SWIPE_REFRESH_LAYOUT)
     implementation(Libs.NAVIGATION_FRAGMENT)
     implementation(Libs.NAVIGATION_UI)
+    implementation(Libs.SHIMMER)
 
     implementation(Libs.RX_JAVA3)
     implementation(Libs.RX_ANDROID3)

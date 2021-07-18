@@ -13,13 +13,20 @@ import com.tn07.survey.features.home.uimodel.SurveyUiModel
  * Jul 17, 2021 at 22:51
  */
 class SurveyViewHolder(
-    parent: ViewGroup
+    parent: ViewGroup,
+    onOpenDetail: (SurveyUiModel) -> Unit
 ) : RecyclerView.ViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_survey, parent, false)
 ) {
     private val binding = ItemSurveyBinding.bind(itemView)
 
     private var uiModel: SurveyUiModel? = null
+
+    init {
+        binding.openDetailFab.setOnClickListener {
+            uiModel?.let(onOpenDetail)
+        }
+    }
 
     fun bind(uiModel: SurveyUiModel) {
         this.uiModel = null
@@ -32,4 +39,5 @@ class SurveyViewHolder(
         }
         this.uiModel = uiModel
     }
+
 }

@@ -18,6 +18,7 @@ object Libs {
     const val PAGING_RXJAVA = "androidx.paging:paging-rxjava3:${Versions.PAGING}"
     const val BLURRY = "jp.wasabeef:blurry:${Versions.BLURRY}"
     const val RX_BINDING = "com.jakewharton.rxbinding4:rxbinding:${Versions.RX_BINDING}"
+    const val SHIMMER = "com.facebook.shimmer:shimmer:${Versions.SHIMMER}"
 
     const val HILT_ANDROID = "com.google.dagger:hilt-android:${Versions.HILT}"
     const val HILT_COMPILER = "com.google.dagger:hilt-compiler:${Versions.HILT}"
