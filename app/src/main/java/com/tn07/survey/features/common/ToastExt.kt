@@ -1,6 +1,7 @@
-package com.tn07.survey.features.base
+package com.tn07.survey.features.common
 
 import android.widget.Toast
+import com.tn07.survey.features.base.BaseFragment
 
 /**
  * Created by toannguyen

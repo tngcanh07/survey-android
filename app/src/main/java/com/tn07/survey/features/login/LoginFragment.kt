@@ -16,11 +16,10 @@ import com.tn07.survey.BLURRY_SAMPLING
 import com.tn07.survey.R
 import com.tn07.survey.databinding.FragmentLoginBinding
 import com.tn07.survey.features.base.BaseFragment
+import com.tn07.survey.features.common.SchedulerProvider
 import com.tn07.survey.features.login.uimodel.LoginResultUiModel
 import com.tn07.survey.features.login.uimodel.TextFieldUiModel
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.schedulers.Schedulers
 import jp.wasabeef.blurry.Blurry
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -36,6 +35,9 @@ class LoginFragment : BaseFragment() {
 
     @Inject
     lateinit var navigator: LoginNavigator
+
+    @Inject
+    lateinit var schedulerProvider: SchedulerProvider
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = requireNotNull(_binding)
@@ -81,14 +83,14 @@ class LoginFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         viewModel.loginResult
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(schedulerProvider.io())
+            .observeOn(schedulerProvider.mainThread())
             .subscribe(::bindLoginResult)
             .addToCompositeDisposable()
 
         viewModel.loginUiModel
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(schedulerProvider.io())
+            .observeOn(schedulerProvider.mainThread())
             .subscribe {
                 bindTextField(it.emailTextField, binding.emailInputLayout)
                 bindTextField(it.passwordTextField, binding.passwordInputLayout)
@@ -102,8 +104,8 @@ class LoginFragment : BaseFragment() {
 
         viewModel.loginState
             .filter { it }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(schedulerProvider.io())
+            .observeOn(schedulerProvider.mainThread())
             .subscribe {
                 navigator.navigateLoginSuccess()
             }

@@ -5,6 +5,7 @@ import androidx.activity.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.tn07.survey.features.base.BaseActivity
+import com.tn07.survey.features.common.SchedulerProvider
 import com.tn07.survey.features.detaillandingpage.DetailLandingPageFragmentArgs
 import com.tn07.survey.features.detaillandingpage.DetailLandingPageNavigator
 import com.tn07.survey.features.home.HomeNavigator
@@ -12,9 +13,13 @@ import com.tn07.survey.features.login.LoginNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), LoginNavigator, HomeNavigator, DetailLandingPageNavigator {
+
+    @Inject
+    private lateinit var schedulerProvider: SchedulerProvider
 
     private val viewModel by viewModels<MainViewModel>()
     private val compositeDisposable = CompositeDisposable()
@@ -37,7 +42,7 @@ class MainActivity : BaseActivity(), LoginNavigator, HomeNavigator, DetailLandin
         viewModel.loginStatusObservable
             .skip(1)
             .filter { !it }
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(schedulerProvider.mainThread())
             .subscribe {
                 startLoginNavigation()
             }

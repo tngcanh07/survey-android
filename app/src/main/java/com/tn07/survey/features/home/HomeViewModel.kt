@@ -6,6 +6,7 @@ import com.tn07.survey.domain.usecases.GetSurveyUseCase
 import com.tn07.survey.domain.usecases.GetUserUseCase
 import com.tn07.survey.domain.usecases.LogoutUseCase
 import com.tn07.survey.features.base.BaseViewModel
+import com.tn07.survey.features.common.SchedulerProvider
 import com.tn07.survey.features.home.transformer.HomeTransformer
 import com.tn07.survey.features.home.uimodel.HomeState
 import com.tn07.survey.features.home.uimodel.LogoutResultUiModel
@@ -17,7 +18,6 @@ import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import javax.inject.Inject
@@ -31,7 +31,8 @@ class HomeViewModel @Inject constructor(
     private val getUserUseCase: GetUserUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val getSurveyUseCase: GetSurveyUseCase,
-    private val transformer: HomeTransformer
+    private val transformer: HomeTransformer,
+    private val schedulerProvider: SchedulerProvider
 ) : BaseViewModel() {
 
     private val _homeState = BehaviorSubject.create<HomeState>()
@@ -74,7 +75,7 @@ class HomeViewModel @Inject constructor(
     private fun loadUser() {
         getUserUseCase.getUserObservable()
             .map(transformer::transformUser)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(schedulerProvider.io())
             .subscribe(_user::onNext) {
             }
             .addToCompositeDisposable()
