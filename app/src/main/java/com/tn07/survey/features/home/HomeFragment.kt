@@ -113,7 +113,10 @@ class HomeFragment : BaseFragment() {
             ?.let(NavHeaderHomeBinding::bind)
             ?.headerContentBoundary
             ?.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                applySystemBarInsets(insets)
+                applySystemBarInsets(
+                    insets,
+                    initialBottomMargin = -insets.bottom // don't care about bottom insets
+                )
             }
     }
 
