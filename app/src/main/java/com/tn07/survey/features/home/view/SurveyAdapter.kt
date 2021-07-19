@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.core.graphics.Insets
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.tn07.survey.databinding.ItemSurveyBinding
 import com.tn07.survey.features.common.SchedulerProvider
 import com.tn07.survey.features.home.uimodel.SurveyUiModel
 import io.reactivex.rxjava3.core.Flowable
@@ -15,7 +16,7 @@ import io.reactivex.rxjava3.disposables.Disposable
  * Jul 17, 2021 at 22:34
  */
 class SurveyAdapter(
-    private val onOpenSurveyDetail: (SurveyUiModel) -> Unit
+    private val onOpenSurveyDetail: (SurveyUiModel, ItemSurveyBinding) -> Unit
 ) : RecyclerView.Adapter<SurveyViewHolder>() {
 
     private var items = emptyList<SurveyUiModel>()

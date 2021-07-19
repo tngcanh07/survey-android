@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayoutMediator
 import com.tn07.survey.R
 import com.tn07.survey.databinding.FragmentHomeBinding
+import com.tn07.survey.databinding.ItemSurveyBinding
 import com.tn07.survey.databinding.NavHeaderHomeBinding
 import com.tn07.survey.features.base.BaseFragment
 import com.tn07.survey.features.common.SchedulerProvider
@@ -141,12 +142,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             .addToCompositeDisposable()
     }
 
-    private fun onOpenSurveyDetail(surveyUiModel: SurveyUiModel) {
+    private fun onOpenSurveyDetail(surveyUiModel: SurveyUiModel, binding: ItemSurveyBinding) {
         navigator.navigateDetailLandingPage(
             id = surveyUiModel.id,
             title = surveyUiModel.title,
             description = surveyUiModel.description,
-            coverImageUrl = surveyUiModel.backgroundImageUrl
+            coverImageUrl = surveyUiModel.backgroundImageUrl,
+            binding.surveyTitle
         )
     }
 

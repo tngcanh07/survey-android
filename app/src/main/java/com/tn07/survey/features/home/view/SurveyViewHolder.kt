@@ -18,7 +18,7 @@ import com.tn07.survey.features.home.uimodel.SurveyUiModel
  */
 class SurveyViewHolder(
     parent: ViewGroup,
-    onOpenDetail: (SurveyUiModel) -> Unit
+    onOpenDetail: (SurveyUiModel, ItemSurveyBinding) -> Unit
 ) : RecyclerView.ViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_survey, parent, false)
 ) {
@@ -28,7 +28,9 @@ class SurveyViewHolder(
 
     init {
         binding.openDetailFab.setOnClickListener {
-            uiModel?.let(onOpenDetail)
+            uiModel?.let {
+                onOpenDetail(it, binding)
+            }
         }
     }
 

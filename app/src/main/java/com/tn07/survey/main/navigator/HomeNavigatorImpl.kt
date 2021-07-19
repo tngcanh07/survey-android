@@ -1,6 +1,7 @@
 package com.tn07.survey.main.navigator
 
 import android.app.Activity
+import android.widget.TextView
 import com.tn07.survey.features.home.HomeFragmentDirections
 import com.tn07.survey.features.home.HomeNavigator
 import javax.inject.Inject
@@ -12,12 +13,13 @@ import javax.inject.Inject
 class HomeNavigatorImpl @Inject constructor(
     activity: Activity
 ) : BaseMainNavigator(activity), HomeNavigator {
-
+    
     override fun navigateDetailLandingPage(
         id: String,
         title: String,
         description: String,
-        coverImageUrl: String
+        coverImageUrl: String,
+        textView: TextView
     ) {
         navigate(
             HomeFragmentDirections.actionOpenDetailLandingPage(

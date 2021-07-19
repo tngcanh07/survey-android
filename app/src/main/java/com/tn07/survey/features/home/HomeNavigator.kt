@@ -1,5 +1,7 @@
 package com.tn07.survey.features.home
 
+import android.widget.TextView
+
 /**
  * Created by toannguyen
  * Jul 18, 2021 at 14:29
@@ -9,7 +11,8 @@ interface HomeNavigator {
         id: String,
         title: String,
         description: String,
-        coverImageUrl: String
+        coverImageUrl: String,
+        textView: TextView
     )
 
     fun navigateLogoutSuccess()
