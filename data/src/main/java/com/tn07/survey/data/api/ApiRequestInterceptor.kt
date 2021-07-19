@@ -32,7 +32,7 @@ class ApiRequestInterceptor @Inject constructor(
             token !is AccessToken -> null
             token.isExpired -> repository.refreshToken(token)
                 .onErrorComplete()
-                .blockingGet(null)
+                .blockingGet()
             else -> token
         }
     }

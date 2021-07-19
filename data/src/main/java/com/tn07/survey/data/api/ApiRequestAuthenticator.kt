@@ -43,7 +43,7 @@ class ApiRequestAuthenticator @Inject constructor(
             storedToken?.let {
                 repository.refreshToken(it)
                     .onErrorComplete()
-                    .blockingGet(null)
+                    .blockingGet()
             }
         } else {
             null

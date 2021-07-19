@@ -29,6 +29,8 @@ object Versions {
     const val GLIDE = "4.12.0"
     const val BLURRY = "4.0.0"
     const val RX_BINDING = "4.0.0"
+    const val SHIMMER = "0.5.0"
+    const val INDEFINITE_PAGER_INDICATOR = "1.4"
 
     const val JUNIT = "5.7.2"
     const val MOCKITO = "3.11.2"

@@ -16,6 +16,9 @@ object Libs {
         "androidx.swiperefreshlayout:swiperefreshlayout:${Versions.SWIPE_REFRESH_LAYOUT}"
     const val BLURRY = "jp.wasabeef:blurry:${Versions.BLURRY}"
     const val RX_BINDING = "com.jakewharton.rxbinding4:rxbinding:${Versions.RX_BINDING}"
+    const val SHIMMER = "com.facebook.shimmer:shimmer:${Versions.SHIMMER}"
+    const val INDEFINITE_PAGER_INDICATOR =
+        "com.github.wching:Android-Indefinite-Pager-Indicator:${Versions.INDEFINITE_PAGER_INDICATOR}"
 
     const val HILT_ANDROID = "com.google.dagger:hilt-android:${Versions.HILT}"
     const val HILT_COMPILER = "com.google.dagger:hilt-compiler:${Versions.HILT}"

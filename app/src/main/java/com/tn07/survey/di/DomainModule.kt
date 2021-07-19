@@ -1,9 +1,15 @@
 package com.tn07.survey.di
 
+import com.tn07.survey.domain.usecases.GetSurveyUseCase
+import com.tn07.survey.domain.usecases.GetSurveyUseCaseImpl
 import com.tn07.survey.domain.usecases.GetTokenUseCase
 import com.tn07.survey.domain.usecases.GetTokenUseCaseImpl
+import com.tn07.survey.domain.usecases.GetUserUseCase
+import com.tn07.survey.domain.usecases.GetUserUseCaseImpl
 import com.tn07.survey.domain.usecases.LoginUseCase
 import com.tn07.survey.domain.usecases.LoginUseCaseImpl
+import com.tn07.survey.domain.usecases.LogoutUseCase
+import com.tn07.survey.domain.usecases.LogoutUseCaseImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -21,4 +27,13 @@ interface DomainModule {
 
     @Binds
     fun bindGetTokenUseCase(useCase: GetTokenUseCaseImpl): GetTokenUseCase
+
+    @Binds
+    fun bindLogoutUseCase(useCase: LogoutUseCaseImpl): LogoutUseCase
+
+    @Binds
+    fun getUserUseCase(useCase: GetUserUseCaseImpl): GetUserUseCase
+
+    @Binds
+    fun getSurveyUseCase(useCase: GetSurveyUseCaseImpl): GetSurveyUseCase
 }
