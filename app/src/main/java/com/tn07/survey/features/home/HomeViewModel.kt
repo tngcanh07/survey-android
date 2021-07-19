@@ -19,6 +19,7 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
 import javax.inject.Inject
 
 /**
@@ -33,9 +34,9 @@ class HomeViewModel @Inject constructor(
     private val transformer: HomeTransformer
 ) : BaseViewModel() {
 
-    private val _surveyLoadingState = BehaviorSubject.create<HomeState>()
+    private val _homeState = BehaviorSubject.create<HomeState>()
     val surveyLoadingEvents: Observable<HomeState>
-        get() = _surveyLoadingState
+        get() = _homeState
 
     private val _user = BehaviorSubject.create<UserUiModel>()
     val user: Observable<UserUiModel>
@@ -61,6 +62,10 @@ class HomeViewModel @Inject constructor(
     val todayDateTime: String
         get() = transformer.todayDateTime
 
+    private val _errorMessageObservable = PublishSubject.create<String>()
+    val errorMessageObservable: Observable<String>
+        get() = _errorMessageObservable
+
     init {
         loadUser()
         loadNextPage()
@@ -83,7 +88,7 @@ class HomeViewModel @Inject constructor(
             }
     }
 
-    private fun onSurveyLoaded(data: Pageable<Survey>) {
+    private fun mergeSurveyData(data: Pageable<Survey>) {
         val currentState = _surveyListResult.value
 
         val items = if (data.page == FIRST_PAGE_INDEX) {
@@ -100,10 +105,6 @@ class HomeViewModel @Inject constructor(
         _surveyListResult.onNext(nextState)
     }
 
-    private fun onSurveyLoadFailed(throwable: Throwable) {
-
-    }
-
     @Synchronized
     private fun loadNextPage() {
         if (loadingSurveyDisposable?.isDisposed != false && hasMore) {
@@ -112,16 +113,21 @@ class HomeViewModel @Inject constructor(
             loadingSurveyDisposable = getSurveyUseCase.getSurveys(nextPage, PAGE_SIZE)
                 .doOnSubscribe {
                     if (currentData.items.isEmpty()) {
-                        _surveyLoadingState.onNext(HomeState.Loading)
+                        _homeState.onNext(HomeState.Loading)
+                    } else {
+                        _homeState.onNext(HomeState.Survey(isLoadingNext = true))
                     }
                 }
                 .subscribe({
-                    onSurveyLoaded(it)
-                    _surveyLoadingState.onNext(HomeState.Success)
+                    mergeSurveyData(it)
+                    _homeState.onNext(HomeState.Survey(isLoadingNext = false))
                 }, {
-                    onSurveyLoadFailed(it)
+                    val errorMessage = transformer.transformErrorMessage(it)
                     if (currentData.items.isEmpty()) {
-                        _surveyLoadingState.onNext(HomeState.Error)
+                        _homeState.onNext(HomeState.Error(errorMessage))
+                    } else {
+                        _homeState.onNext(HomeState.Survey(isLoadingNext = false))
+                        _errorMessageObservable.onNext(errorMessage)
                     }
                 })
         }
@@ -148,7 +154,7 @@ class HomeViewModel @Inject constructor(
     companion object {
         private const val FIRST_PAGE_INDEX = 1
         private const val PAGE_SIZE = 5
-        private const val PREFETCH_OFFSET = 2
+        private const val PREFETCH_OFFSET = 1
     }
 }
 

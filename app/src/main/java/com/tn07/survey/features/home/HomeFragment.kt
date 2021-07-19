@@ -82,9 +82,9 @@ class HomeFragment : BaseFragment() {
                             swipeRefreshLayout.isEnabled = state == ViewPager2.SCROLL_STATE_IDLE
                         }
                     })
-
                 pageIndicator.attachToViewPager2(surveyViewPager)
             }
+            errorLayout.retryButton.setOnClickListener { viewModel.refreshSurveys() }
         }
     }
 
@@ -106,6 +106,11 @@ class HomeFragment : BaseFragment() {
         viewModel.surveyLoadingEvents
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(::bindSurveyLoadingEvent)
+            .addToCompositeDisposable()
+
+        viewModel.errorMessageObservable
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(::toast)
             .addToCompositeDisposable()
     }
 
@@ -137,20 +142,28 @@ class HomeFragment : BaseFragment() {
         with(binding) {
             when (event) {
                 HomeState.Loading -> {
-                    contentHomePage.root.visibility = View.INVISIBLE
+                    contentHomePage.root.visibility = View.GONE
                     surveyLoadingLayout.root.visibility = View.VISIBLE
+                    errorLayout.root.visibility = View.GONE
                     contentHomePage.swipeRefreshLayout.isRefreshing = false
                     contentHomePage.swipeRefreshLayout.isEnabled = false
                 }
-                HomeState.Success -> {
+                is HomeState.Survey -> {
                     contentHomePage.root.visibility = View.VISIBLE
                     surveyLoadingLayout.root.visibility = View.GONE
+                    errorLayout.root.visibility = View.GONE
                     contentHomePage.swipeRefreshLayout.isEnabled = true
+                    contentHomePage.loadingNextIndicator.visibility = if (event.isLoadingNext) {
+                        View.VISIBLE
+                    } else {
+                        View.GONE
+                    }
                 }
-                HomeState.Error -> {
-                    contentHomePage.root.visibility = View.INVISIBLE
+                is HomeState.Error -> {
+                    contentHomePage.root.visibility = View.GONE
                     surveyLoadingLayout.root.visibility = View.GONE
-                    contentHomePage.swipeRefreshLayout.isEnabled = true
+                    errorLayout.root.visibility = View.VISIBLE
+                    errorLayout.errorMessage.text = event.errorMessage
                 }
             }
             contentHomePage.dateTime.text = viewModel.todayDateTime

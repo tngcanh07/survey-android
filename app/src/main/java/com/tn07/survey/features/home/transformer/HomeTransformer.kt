@@ -15,4 +15,6 @@ interface HomeTransformer {
     fun transformUser(user: User): UserUiModel
 
     fun transformSurvey(survey: Survey): SurveyUiModel
+
+    fun transformErrorMessage(throwable: Throwable): String
 }

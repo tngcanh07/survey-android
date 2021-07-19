@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
@@ -59,6 +60,12 @@
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:layout_marginBottom="188dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"  />
+        app:layout_constraintStart_toStartOf="parent" />
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/loading_next_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:indicatorDirectionLinear="startToEnd"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,7 +7,11 @@ package com.tn07.survey.features.home.uimodel
 sealed interface HomeState {
     object Loading : HomeState
 
-    object Success : HomeState
+    class Survey(
+        val isLoadingNext: Boolean
+    ) : HomeState
 
-    object Error : HomeState
+    class Error(
+        val errorMessage: String
+    ) : HomeState
 }
