@@ -1,5 +1,10 @@
 package com.tn07.survey.features.base
 
+import android.os.Bundle
+import android.view.View
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -16,6 +21,19 @@ open class BaseFragment : Fragment() {
         synchronized(locker) {
             compositeDisposable.add(this)
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            handleSystemBarInsets(insets)
+            WindowInsetsCompat.CONSUMED
+        }
+    }
+
+    open fun handleSystemBarInsets(insets: Insets) {
+
     }
 
     override fun onResume() {

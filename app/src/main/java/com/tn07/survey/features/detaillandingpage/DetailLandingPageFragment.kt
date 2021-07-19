@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.graphics.Insets
+import androidx.core.view.updateLayoutParams
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -13,6 +16,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.tn07.survey.databinding.FragmentDetailLandingPageBinding
 import com.tn07.survey.features.base.BaseFragment
+import com.tn07.survey.features.common.applySystemBarInsets
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -59,7 +63,14 @@ class DetailLandingPageFragment : BaseFragment() {
                 .into(backgroundImage)
         }
     }
-    
+
+    override fun handleSystemBarInsets(insets: Insets) {
+        super.handleSystemBarInsets(insets)
+        binding.landingPageContentBoundary.updateLayoutParams<ConstraintLayout.LayoutParams> {
+            applySystemBarInsets(insets)
+        }
+    }
+
     private val listener = object : RequestListener<Drawable> {
         override fun onLoadFailed(
             e: GlideException?,

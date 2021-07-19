@@ -45,7 +45,7 @@
         android:id="@+id/loading_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#1f1f1f1f"
+        android:background="@color/app_background"
         android:visibility="gone">
 
         <ProgressBar

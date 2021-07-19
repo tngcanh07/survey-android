@@ -2,6 +2,7 @@ package com.tn07.survey
 
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.tn07.survey.features.base.BaseActivity
@@ -19,7 +20,7 @@ import javax.inject.Inject
 class MainActivity : BaseActivity(), LoginNavigator, HomeNavigator, DetailLandingPageNavigator {
 
     @Inject
-    private lateinit var schedulerProvider: SchedulerProvider
+    lateinit var schedulerProvider: SchedulerProvider
 
     private val viewModel by viewModels<MainViewModel>()
     private val compositeDisposable = CompositeDisposable()
@@ -28,6 +29,7 @@ class MainActivity : BaseActivity(), LoginNavigator, HomeNavigator, DetailLandin
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.main_activity)
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
@@ -47,6 +49,7 @@ class MainActivity : BaseActivity(), LoginNavigator, HomeNavigator, DetailLandin
                 startLoginNavigation()
             }
             .let(compositeDisposable::add)
+
     }
 
     override fun navigateLoginSuccess() {

@@ -1,0 +1,10 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Theme.Survey" parent="Theme.Base">
+        <!-- Step 1 change navigation bar color -->
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <!-- Step 2 change status bar color. -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+</resources>

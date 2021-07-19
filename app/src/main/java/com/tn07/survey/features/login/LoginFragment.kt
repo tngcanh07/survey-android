@@ -6,7 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.Insets
+import androidx.core.view.updateLayoutParams
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import com.google.android.material.textfield.TextInputLayout
@@ -17,6 +20,7 @@ import com.tn07.survey.R
 import com.tn07.survey.databinding.FragmentLoginBinding
 import com.tn07.survey.features.base.BaseFragment
 import com.tn07.survey.features.common.SchedulerProvider
+import com.tn07.survey.features.common.applySystemBarInsets
 import com.tn07.survey.features.login.uimodel.LoginResultUiModel
 import com.tn07.survey.features.login.uimodel.TextFieldUiModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -78,6 +82,13 @@ class LoginFragment : BaseFragment() {
             viewModel.login()
         }
         blurBackground()
+    }
+
+    override fun handleSystemBarInsets(insets: Insets) {
+        super.handleSystemBarInsets(insets)
+        binding.loginContentBoundary.updateLayoutParams<ConstraintLayout.LayoutParams> {
+            applySystemBarInsets(insets)
+        }
     }
 
     override fun onResume() {

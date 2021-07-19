@@ -2,6 +2,7 @@ package com.tn07.survey.features.home.view
 
 import android.util.Pair
 import android.view.ViewGroup
+import androidx.core.graphics.Insets
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.tn07.survey.features.common.SchedulerProvider
@@ -18,6 +19,8 @@ class SurveyAdapter(
 ) : RecyclerView.Adapter<SurveyViewHolder>() {
 
     private var items = emptyList<SurveyUiModel>()
+
+    var systemBarInsets: Insets? = null
 
     fun bindDataSource(
         schedulerProvider: SchedulerProvider,
@@ -38,7 +41,7 @@ class SurveyAdapter(
     }
 
     override fun onBindViewHolder(holder: SurveyViewHolder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(items[position], systemBarInsets)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SurveyViewHolder {

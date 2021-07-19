@@ -4,6 +4,7 @@
     android:id="@+id/shimmer_view_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/app_background"
     app:shimmer_auto_start="true"
     app:shimmer_highlight_color="#1fffffff">
 
@@ -11,16 +12,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <View
+            android:id="@+id/loading_content_boundary"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/loading_headline_1"
             android:layout_width="117dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="40dp"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:background="@drawable/ic_loading_text"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="@id/loading_content_boundary"
+            app:layout_constraintTop_toTopOf="@id/loading_content_boundary" />
 
         <TextView
             android:id="@+id/loading_headline_2"
@@ -30,26 +40,17 @@
             android:layout_marginTop="12dp"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:background="@drawable/ic_loading_text"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/loading_content_boundary"
             app:layout_constraintTop_toBottomOf="@id/loading_headline_1" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/user_avatar"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="60dp"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_loading_avatar" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginTop="80dp"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/loading_content_boundary"
+            app:layout_constraintTop_toTopOf="@id/loading_content_boundary"
             app:srcCompat="@drawable/ic_loading_avatar" />
 
         <TextView
@@ -61,7 +62,7 @@
             android:layout_marginBottom="16dp"
             android:background="@drawable/ic_loading_text"
             app:layout_constraintBottom_toTopOf="@id/loading_title_1"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="@id/loading_content_boundary" />
 
         <TextView
             android:id="@+id/loading_title_1"
@@ -72,7 +73,7 @@
             android:layout_marginBottom="8dp"
             android:background="@drawable/ic_loading_text"
             app:layout_constraintBottom_toTopOf="@id/loading_title_2"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="@id/loading_content_boundary" />
 
         <TextView
             android:id="@+id/loading_title_2"
@@ -83,7 +84,7 @@
             android:layout_marginBottom="16dp"
             android:background="@drawable/ic_loading_text"
             app:layout_constraintBottom_toTopOf="@id/loading_description_1"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="@id/loading_content_boundary" />
 
         <TextView
             android:id="@+id/loading_description_1"
@@ -95,7 +96,7 @@
             android:layout_marginBottom="8dp"
             android:background="@drawable/ic_loading_text"
             app:layout_constraintBottom_toTopOf="@id/loading_description_2"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="@id/loading_content_boundary" />
 
         <TextView
             android:id="@+id/loading_description_2"
@@ -105,8 +106,8 @@
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:layout_marginBottom="40dp"
             android:background="@drawable/ic_loading_text"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintBottom_toBottomOf="@+id/loading_content_boundary"
+            app:layout_constraintStart_toStartOf="@id/loading_content_boundary" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.facebook.shimmer.ShimmerFrameLayout>
