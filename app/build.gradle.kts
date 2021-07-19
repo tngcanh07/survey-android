@@ -32,32 +32,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
-        create("stage") {
-            initWith(buildTypes.getAt("debug"))
-            applicationIdSuffix = ".stage"
-            setMatchingFallbacks("stage", "debug", "release")
-
-            buildConfigField(
-                type = "String",
-                name = "BASE_URL",
-                value = getProperty("apiConfigs.staging.baseUrl").orEmpty()
-            )
-            buildConfigField(
-                type = "String",
-                name = "CLIENT_ID",
-                value = getProperty("apiConfigs.staging.clientId").orEmpty()
-            )
-            buildConfigField(
-                type = "String",
-                name = "CLIENT_SECRET",
-                value = getProperty("apiConfigs.staging.clientSecret").orEmpty()
-            )
-        }
-
+    flavorDimensions("app")
+    productFlavors {
         create("production") {
-            initWith(buildTypes.getAt("release"))
-            setMatchingFallbacks("production", "release")
+            dimension = "app"
 
             buildConfigField(
                 type = "String",
@@ -75,10 +53,31 @@ android {
                 value = getProperty("apiConfigs.production.clientSecret").orEmpty()
             )
         }
+
+        create("staging") {
+            applicationIdSuffix = ".staging"
+            dimension = "app"
+
+            buildConfigField(
+                type = "String",
+                name = "BASE_URL",
+                value = getProperty("apiConfigs.staging.baseUrl").orEmpty()
+            )
+            buildConfigField(
+                type = "String",
+                name = "CLIENT_ID",
+                value = getProperty("apiConfigs.staging.clientId").orEmpty()
+            )
+            buildConfigField(
+                type = "String",
+                name = "CLIENT_SECRET",
+                value = getProperty("apiConfigs.staging.clientSecret").orEmpty()
+            )
+        }
     }
 
     variantFilter {
-        if (name.contains("release", true) || name.contains("debug", true)) {
+        if (name == "productionDebug" || name == "stagingRelease") {
             ignore = true
         }
     }
