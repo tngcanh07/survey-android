@@ -12,7 +12,8 @@ import com.tn07.survey.R
 import com.tn07.survey.databinding.FragmentHomeBinding
 import com.tn07.survey.databinding.NavHeaderHomeBinding
 import com.tn07.survey.features.base.BaseFragment
-import com.tn07.survey.features.base.toast
+import com.tn07.survey.features.common.SchedulerProvider
+import com.tn07.survey.features.common.toast
 import com.tn07.survey.features.home.uimodel.HomeState
 import com.tn07.survey.features.home.uimodel.LogoutResultUiModel
 import com.tn07.survey.features.home.uimodel.SurveyUiModel
@@ -20,7 +21,6 @@ import com.tn07.survey.features.home.uimodel.UserUiModel
 import com.tn07.survey.features.home.view.DepthPageTransformer
 import com.tn07.survey.features.home.view.SurveyAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 
 /**
@@ -34,6 +34,9 @@ class HomeFragment : BaseFragment() {
 
     @Inject
     lateinit var navigator: HomeNavigator
+
+    @Inject
+    lateinit var schedulerProvider: SchedulerProvider
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = requireNotNull(_binding)
@@ -91,25 +94,25 @@ class HomeFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         viewModel.user
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(schedulerProvider.mainThread())
             .subscribe(::bindUser)
             .addToCompositeDisposable()
 
-        surveyAdapter.bindDataSource(viewModel.surveyListResult)
+        surveyAdapter.bindDataSource(schedulerProvider, viewModel.surveyListResult)
             .addToCompositeDisposable()
 
         viewModel.user
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(schedulerProvider.mainThread())
             .subscribe(::bindUser)
             .addToCompositeDisposable()
 
         viewModel.surveyLoadingEvents
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(schedulerProvider.mainThread())
             .subscribe(::bindSurveyLoadingEvent)
             .addToCompositeDisposable()
 
         viewModel.errorMessageObservable
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(schedulerProvider.mainThread())
             .subscribe(::toast)
             .addToCompositeDisposable()
     }
@@ -128,7 +131,7 @@ class HomeFragment : BaseFragment() {
             .doOnSubscribe {
                 binding.loadingOverlay.visibility = View.VISIBLE
             }
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(schedulerProvider.mainThread())
             .subscribe { result: LogoutResultUiModel ->
                 binding.loadingOverlay.visibility = View.GONE
                 if (result is LogoutResultUiModel.Error) {

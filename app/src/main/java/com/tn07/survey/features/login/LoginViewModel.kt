@@ -4,6 +4,7 @@ import com.tn07.survey.domain.entities.AccessToken
 import com.tn07.survey.domain.usecases.GetTokenUseCase
 import com.tn07.survey.domain.usecases.LoginUseCase
 import com.tn07.survey.features.base.BaseViewModel
+import com.tn07.survey.features.common.SchedulerProvider
 import com.tn07.survey.features.login.transformer.LoginTransformer
 import com.tn07.survey.features.login.uimodel.FormError
 import com.tn07.survey.features.login.uimodel.LoginResultUiModel
@@ -14,7 +15,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
@@ -29,7 +29,8 @@ class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val getTokenUseCase: GetTokenUseCase,
     private val formValidator: LogInFormValidator,
-    private val transformer: LoginTransformer
+    private val transformer: LoginTransformer,
+    private val schedulerProvider: SchedulerProvider
 ) : BaseViewModel() {
 
     private val _loginResult = PublishSubject.create<LoginResultUiModel>()
@@ -57,7 +58,7 @@ class LoginViewModel @Inject constructor(
         _loginUiModel.onNext(initialUiModel)
 
         loginUiModelEvents.toFlowable(BackpressureStrategy.BUFFER)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(schedulerProvider.io())
             .subscribe {
                 _loginUiModel.value
                     ?.let(it)
