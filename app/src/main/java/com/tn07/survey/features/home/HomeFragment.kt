@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.graphics.Insets
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
@@ -13,6 +16,7 @@ import com.tn07.survey.databinding.FragmentHomeBinding
 import com.tn07.survey.databinding.NavHeaderHomeBinding
 import com.tn07.survey.features.base.BaseFragment
 import com.tn07.survey.features.common.SchedulerProvider
+import com.tn07.survey.features.common.applySystemBarInsets
 import com.tn07.survey.features.common.toast
 import com.tn07.survey.features.home.uimodel.HomeState
 import com.tn07.survey.features.home.uimodel.LogoutResultUiModel
@@ -89,6 +93,28 @@ class HomeFragment : BaseFragment() {
             }
             errorLayout.retryButton.setOnClickListener { viewModel.refreshSurveys() }
         }
+    }
+
+    override fun handleSystemBarInsets(insets: Insets) {
+        surveyAdapter.systemBarInsets = insets
+        binding.contentHomePage
+            .homeContentBoundary
+            .updateLayoutParams<ConstraintLayout.LayoutParams> {
+                applySystemBarInsets(insets)
+            }
+
+        binding.surveyLoadingLayout
+            .loadingContentBoundary
+            .updateLayoutParams<ConstraintLayout.LayoutParams> {
+                applySystemBarInsets(insets)
+            }
+
+        binding.navView.getHeaderView(0)
+            ?.let(NavHeaderHomeBinding::bind)
+            ?.headerContentBoundary
+            ?.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                applySystemBarInsets(insets)
+            }
     }
 
     override fun onResume() {
