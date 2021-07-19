@@ -19,7 +19,7 @@ import javax.inject.Inject
 class MainActivity : BaseActivity(), LoginNavigator, HomeNavigator, DetailLandingPageNavigator {
 
     @Inject
-    private lateinit var schedulerProvider: SchedulerProvider
+    lateinit var schedulerProvider: SchedulerProvider
 
     private val viewModel by viewModels<MainViewModel>()
     private val compositeDisposable = CompositeDisposable()

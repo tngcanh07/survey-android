@@ -6,6 +6,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 /**
  * Created by toannguyen
@@ -15,5 +16,6 @@ import dagger.hilt.components.SingletonComponent
 @Module
 interface AppModule {
     @Binds
+    @Singleton
     fun bindRxSchedulerProvider(impl: SchedulerProviderImpl): SchedulerProvider
 }
