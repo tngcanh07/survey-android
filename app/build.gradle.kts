@@ -110,7 +110,7 @@ dependencies {
     implementation(Libs.NAVIGATION_FRAGMENT)
     implementation(Libs.NAVIGATION_UI)
     implementation(Libs.SHIMMER)
-    implementation(Libs.SCROLLING_PAGER_INDICATOR)
+    implementation(Libs.INDEFINITE_PAGER_INDICATOR)
 
     implementation(Libs.RX_JAVA3)
     implementation(Libs.RX_ANDROID3)

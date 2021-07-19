@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.tn07.survey.R
@@ -83,20 +82,8 @@ class HomeFragment : BaseFragment() {
                             swipeRefreshLayout.isEnabled = state == ViewPager2.SCROLL_STATE_IDLE
                         }
                     })
-                surveyAdapter.registerAdapterDataObserver(
-                    object : RecyclerView.AdapterDataObserver() {
-                        override fun onChanged() {
-                            pageIndicator.attachToPager(surveyViewPager)
-                        }
 
-                        override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
-                            pageIndicator.detachFromPager()
-                        }
-
-                        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                            pageIndicator.attachToPager(surveyViewPager)
-                        }
-                    })
+                pageIndicator.attachToViewPager2(surveyViewPager)
             }
         }
     }
