@@ -37,6 +37,7 @@ class ApiRequestAuthenticator @Inject constructor(
             return count
         }
 
+    @Synchronized
     private fun refreshToken(response: Response): AccessToken? {
         return if (response.responseCount == 1) {
             val storedToken = repository.getToken() as? AccessToken
