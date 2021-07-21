@@ -3,6 +3,11 @@ plugins {
     id("kotlin-android")
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+    jacoco
+}
+
+jacoco {
+    toolVersion = Versions.JACOCO
 }
 
 private val localProperties =
@@ -27,6 +32,8 @@ android {
 
     buildTypes {
         named("debug") {
+            isTestCoverageEnabled = true
+
             buildConfigField(
                 type = "String",
                 name = "BASE_URL",
@@ -63,6 +70,13 @@ android {
     kotlinOptions {
         jvmTarget = Versions.JVM_TARGET
     }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+        configure<JacocoTaskExtension> {
+            isIncludeNoLocationClasses = true
+        }
+    }
 }
 
 dependencies {
@@ -83,4 +97,51 @@ dependencies {
     testImplementation(Libs.JUNIT)
     testImplementation(Libs.MOCKITO)
     testImplementation(Libs.MOCK_WEBSERVER)
+}
+
+tasks.create(name = "jacocoTestReport", type = JacocoReport::class) {
+    setDependsOn(setOf("testDebugUnitTest", "createDebugCoverageReport"))
+    classDirectories.setFrom(fileTree("$buildDir/tmp/kotlin-classes/debug") {
+        setExcludes(
+            listOf(
+                "**/com/tn07/survey/data/di/**.class"
+            )
+        )
+    })
+    sourceDirectories.setFrom("$projectDir/src/main/java")
+    executionData.setFrom(fileTree(projectDir) {
+        setIncludes(
+            listOf(
+                "$buildDir/jacoco/testDebugUnitTest.exec",
+                "jacoco.exec"
+            )
+        )
+    })
+}
+
+tasks.create(name = "jacocoTestCoverageVerification", type = JacocoCoverageVerification::class) {
+    setDependsOn(setOf("testDebugUnitTest"))
+    classDirectories.setFrom(fileTree("$buildDir/tmp/kotlin-classes/debug") {
+        setExcludes(
+            listOf("**/test/**")
+        )
+    })
+    executionData.setFrom(fileTree(projectDir) {
+        setIncludes(
+            listOf(
+                "$buildDir/jacoco/testDebugUnitTest.exec",
+                "jacoco.exec"
+            )
+        )
+    })
+    violationRules {
+        rule {
+            element = "PACKAGE"
+            limit {
+                counter = "INSTRUCTION"
+                value = "COVEREDRATIO"
+                minimum = "0.70".toBigDecimal()
+            }
+        }
+    }
 }
