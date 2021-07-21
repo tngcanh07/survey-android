@@ -6,6 +6,11 @@ plugins {
     id("kotlin-kapt")
     id("androidx.navigation.safeargs.kotlin")
     id("dagger.hilt.android.plugin")
+    jacoco
+}
+
+jacoco {
+    toolVersion = Versions.JACOCO
 }
 
 private val localProperties = gradleLocalProperties(rootDir)
@@ -30,6 +35,13 @@ android {
         versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testBuildType = "debug"
+    }
+
+    buildTypes {
+        named("debug") {
+            isTestCoverageEnabled = true
+        }
     }
 
     flavorDimensions("app")
@@ -94,6 +106,13 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+        configure<JacocoTaskExtension> {
+            isIncludeNoLocationClasses = true
+        }
+    }
 }
 
 dependencies {
@@ -125,4 +144,24 @@ dependencies {
 
     testImplementation(Libs.JUNIT)
     testImplementation(Libs.MOCKITO)
+}
+
+tasks.create(name = "jacocoStagingTestReport", type = JacocoReport::class) {
+    setDependsOn(setOf("testStagingDebugUnitTest", "createStagingDebugCoverageReport"))
+    classDirectories.setFrom(fileTree("$buildDir/tmp/kotlin-classes/stagingDebug") {
+        setExcludes(
+            listOf(
+                "**/com/tn07/survey/di/**.class"
+            )
+        )
+    })
+    sourceDirectories.setFrom("$projectDir/src/main/java")
+    executionData.setFrom(fileTree(projectDir) {
+        setIncludes(
+            listOf(
+                "$buildDir/jacoco/testStagingDebugUnitTest.exec",
+                "jacoco.exec"
+            )
+        )
+    })
 }
