@@ -90,7 +90,6 @@ internal class OAuthRepositoryImplTest {
         val refreshToken = "mock-refresh-token"
         val currentToken = Mockito.mock(AccessToken::class.java)
         Mockito.`when`(currentToken.refreshToken).thenReturn(refreshToken)
-        val accessToken = Mockito.mock(AccessTokenDataModel::class.java)
         val expectedError = ApiException(400)
 
         Mockito.`when`(remoteDataSource.refreshToken(refreshToken))

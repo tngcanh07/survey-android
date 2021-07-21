@@ -34,4 +34,5 @@ object Versions {
 
     const val JUNIT = "5.7.2"
     const val MOCKITO = "3.11.2"
+    const val JACOCO = "0.8.7"
 }
