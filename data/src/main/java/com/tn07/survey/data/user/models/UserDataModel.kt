@@ -10,4 +10,4 @@ import com.tn07.survey.domain.entities.User
 data class UserDataModel(
     @SerializedName("email") override val email: String,
     @SerializedName("avatar_url") override val avatarUrl: String?
-): User
+) : User

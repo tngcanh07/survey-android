@@ -12,4 +12,4 @@ internal const val NETWORK_READ_TIME_OUT = 20L
 internal const val NETWORK_WRITE_TIME_OUT = 20L
 internal const val NETWORK_CONNECT_TIME_OUT = 20L
 
-internal const val HEADER_AUTHORIZATION  = "Authorization"
+internal const val HEADER_AUTHORIZATION = "Authorization"

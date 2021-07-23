@@ -118,5 +118,4 @@ class LoginViewModel @Inject constructor(
             _loginResult.onNext(transformer.transformErrorResult(throwable))
         }
     }
-
 }

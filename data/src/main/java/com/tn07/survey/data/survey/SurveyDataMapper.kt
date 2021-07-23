@@ -4,15 +4,14 @@ import com.tn07.survey.data.api.PageableApiResponse
 import com.tn07.survey.data.survey.model.SurveyResponse
 import com.tn07.survey.domain.entities.Pageable
 import com.tn07.survey.domain.entities.Survey
-import retrofit2.Response
 
 /**
  * Created by toannguyen
  * Jul 18, 2021 at 09:20
  */
 
-internal fun PageableApiResponse<SurveyResponse>.mapToPageableEntity() : Pageable<Survey> {
-    return object :Pageable<Survey> {
+internal fun PageableApiResponse<SurveyResponse>.mapToPageableEntity(): Pageable<Survey> {
+    return object : Pageable<Survey> {
         override val items: List<Survey> = data.map(SurveyResponse::mapToSurveyEntity)
         override val page: Int = meta.page
         override val pages: Int = meta.pages
