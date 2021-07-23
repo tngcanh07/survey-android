@@ -1,9 +1,7 @@
 package com.tn07.survey.features.home
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.Insets
@@ -32,7 +30,7 @@ import javax.inject.Inject
  * Jul 16, 2021 at 14:23
  */
 @AndroidEntryPoint
-class HomeFragment : BaseFragment() {
+class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate) {
 
     private val viewModel: HomeViewModel by viewModels()
 
@@ -42,19 +40,7 @@ class HomeFragment : BaseFragment() {
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
-    private var _binding: FragmentHomeBinding? = null
-    private val binding get() = requireNotNull(_binding)
-
     private val surveyAdapter = SurveyAdapter(this::onOpenSurveyDetail)
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -220,10 +206,5 @@ class HomeFragment : BaseFragment() {
             .placeholder(R.drawable.ic_avatar_placeholder)
             .error(R.drawable.ic_avatar_placeholder)
             .into(imageView)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

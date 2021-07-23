@@ -2,9 +2,7 @@ package com.tn07.survey.features.detaillandingpage
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.Insets
 import androidx.core.view.updateLayoutParams
@@ -25,24 +23,13 @@ import javax.inject.Inject
  * Jul 18, 2021 at 14:21
  */
 @AndroidEntryPoint
-class DetailLandingPageFragment : BaseFragment() {
+class DetailLandingPageFragment :
+    BaseFragment<FragmentDetailLandingPageBinding>(FragmentDetailLandingPageBinding::inflate) {
 
     @Inject
     lateinit var navigator: DetailLandingPageNavigator
 
-    private var _binding: FragmentDetailLandingPageBinding? = null
-    private val binding get() = requireNotNull(_binding)
-
     private val fragmentArgs by navArgs<DetailLandingPageFragmentArgs>()
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentDetailLandingPageBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -91,5 +78,4 @@ class DetailLandingPageFragment : BaseFragment() {
             return false
         }
     }
-
 }

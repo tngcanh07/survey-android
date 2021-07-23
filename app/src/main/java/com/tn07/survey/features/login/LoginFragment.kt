@@ -2,9 +2,7 @@ package com.tn07.survey.features.login
 
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
@@ -35,7 +33,7 @@ import javax.inject.Inject
 private const val DEBOUNCE_TEXT_CHANGE_EVENT = 250L
 
 @AndroidEntryPoint
-class LoginFragment : BaseFragment() {
+class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::inflate) {
 
     private val viewModel by viewModels<LoginViewModel>()
 
@@ -44,18 +42,6 @@ class LoginFragment : BaseFragment() {
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
-
-    private var _binding: FragmentLoginBinding? = null
-    private val binding get() = requireNotNull(_binding)
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentLoginBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -204,10 +190,5 @@ class LoginFragment : BaseFragment() {
                     .from(it.bitmap)
                     .into(imageView)
             }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
