@@ -57,8 +57,7 @@ class HomeViewModel @Inject constructor(
 
     private var loadingSurveyDisposable: Disposable? = null
 
-    var currentSurveyItem: Int = 0
-        private set
+    private var currentSurveyItem: Int = 0
 
     val todayDateTime: String
         get() = transformer.todayDateTime
@@ -67,9 +66,14 @@ class HomeViewModel @Inject constructor(
     val errorMessageObservable: Observable<String>
         get() = _errorMessageObservable
 
-    init {
-        loadUser()
-        loadNextPage()
+    fun initUser() {
+        if (_user.value == null) {
+            loadUser()
+        }
+    }
+
+    fun initSurveys() {
+        checkAndLoadSurveyIfNeeded()
     }
 
     private fun loadUser() {
@@ -142,7 +146,11 @@ class HomeViewModel @Inject constructor(
 
     fun setCurrentPage(position: Int) {
         currentSurveyItem = position
-        if (position + PREFETCH_OFFSET >= _surveyListResult.value.items.lastIndex) {
+        checkAndLoadSurveyIfNeeded()
+    }
+
+    private fun checkAndLoadSurveyIfNeeded() {
+        if (currentSurveyItem + PREFETCH_OFFSET >= _surveyListResult.value.items.lastIndex) {
             loadNextPage()
         }
     }

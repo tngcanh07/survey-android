@@ -8,8 +8,8 @@ import com.tn07.survey.data.api.OAuthConfig
 import com.tn07.survey.data.oauth.datasources.remote.OAuthRemoteDataSourceImpl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.Before
+import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit
 class OAuthApiTest {
     private lateinit var oauthRemoteData: OAuthRemoteDataSourceImpl
 
-    @BeforeEach
+    @Before
     fun setUp() {
 
         val oauthConfig = OAuthConfig(

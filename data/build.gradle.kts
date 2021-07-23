@@ -26,8 +26,8 @@ android {
 
     defaultConfig {
         minSdkVersion(Versions.MIN_SDK)
-        targetSdkVersion(Versions.TARGET_SDK)
         testBuildType = "debug"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -72,9 +72,62 @@ android {
     }
 
     tasks.withType<Test> {
-        useJUnitPlatform()
         configure<JacocoTaskExtension> {
             isIncludeNoLocationClasses = true
+        }
+    }
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
+}
+
+tasks.create(name = "jacocoTestReport", type = JacocoReport::class) {
+    setDependsOn(setOf("testDebugUnitTest", "createDebugCoverageReport"))
+    classDirectories.setFrom(fileTree("$buildDir/tmp/kotlin-classes/debug") {
+        setExcludes(
+            listOf(
+                "**/test/**",
+                "**/com/tn07/survey/data/di/**.class"
+            )
+        )
+    })
+    sourceDirectories.setFrom("$projectDir/src/main/java")
+    executionData.setFrom(fileTree(projectDir) {
+        setIncludes(
+            listOf(
+                "$buildDir/jacoco/testDebugUnitTest.exec",
+                "jacoco.exec"
+            )
+        )
+    })
+}
+
+tasks.create(name = "jacocoTestCoverageVerification", type = JacocoCoverageVerification::class) {
+    setDependsOn(setOf("jacocoTestReport"))
+    classDirectories.setFrom(fileTree("$buildDir/tmp/kotlin-classes/debug") {
+        setExcludes(
+            listOf(
+                "**/test/**",
+                "**/com/tn07/survey/data/di/**.class"
+            )
+        )
+    })
+    executionData.setFrom(fileTree(projectDir) {
+        setIncludes(
+            listOf(
+                "$buildDir/jacoco/testDebugUnitTest.exec",
+                "jacoco.exec"
+            )
+        )
+    })
+    violationRules {
+        rule {
+            element = "BUNDLE"
+            limit {
+                counter = "INSTRUCTION"
+                value = "COVEREDRATIO"
+                minimum = "0.70".toBigDecimal()
+            }
         }
     }
 }
@@ -94,54 +147,12 @@ dependencies {
     implementation(Libs.HILT_ANDROID)
     kapt(Libs.HILT_COMPILER)
 
-    testImplementation(Libs.JUNIT)
+    testImplementation(Libs.JUNIT4)
     testImplementation(Libs.MOCKITO)
     testImplementation(Libs.MOCK_WEBSERVER)
-}
+    testImplementation(Libs.ROBOLECTRIC)
 
-tasks.create(name = "jacocoTestReport", type = JacocoReport::class) {
-    setDependsOn(setOf("testDebugUnitTest", "createDebugCoverageReport"))
-    classDirectories.setFrom(fileTree("$buildDir/tmp/kotlin-classes/debug") {
-        setExcludes(
-            listOf(
-                "**/com/tn07/survey/data/di/**.class"
-            )
-        )
-    })
-    sourceDirectories.setFrom("$projectDir/src/main/java")
-    executionData.setFrom(fileTree(projectDir) {
-        setIncludes(
-            listOf(
-                "$buildDir/jacoco/testDebugUnitTest.exec",
-                "jacoco.exec"
-            )
-        )
-    })
-}
-
-tasks.create(name = "jacocoTestCoverageVerification", type = JacocoCoverageVerification::class) {
-    setDependsOn(setOf("testDebugUnitTest"))
-    classDirectories.setFrom(fileTree("$buildDir/tmp/kotlin-classes/debug") {
-        setExcludes(
-            listOf("**/test/**")
-        )
-    })
-    executionData.setFrom(fileTree(projectDir) {
-        setIncludes(
-            listOf(
-                "$buildDir/jacoco/testDebugUnitTest.exec",
-                "jacoco.exec"
-            )
-        )
-    })
-    violationRules {
-        rule {
-            element = "PACKAGE"
-            limit {
-                counter = "INSTRUCTION"
-                value = "COVEREDRATIO"
-                minimum = "0.70".toBigDecimal()
-            }
-        }
-    }
+    androidTestImplementation(Libs.JUNIT4)
+    androidTestImplementation(Libs.ANDROID_TEST_RUNNER)
+    androidTestImplementation(Libs.ANDROID_JUNIT_EXT)
 }

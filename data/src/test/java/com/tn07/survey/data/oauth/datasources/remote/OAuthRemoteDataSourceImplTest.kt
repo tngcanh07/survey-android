@@ -1,15 +1,15 @@
 package com.tn07.survey.data.oauth.datasources.remote
 
 import com.google.gson.Gson
+import com.tn07.survey.data.TestDataProvider
 import com.tn07.survey.data.api.OAuthConfig
-import com.tn07.survey.openResource
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -24,13 +24,7 @@ internal class OAuthRemoteDataSourceImplTest {
     private lateinit var remoteDataSource: OAuthRemoteDataSourceImpl
     private lateinit var oauthConfig: OAuthConfig
 
-    private val accessTokenJson: String by lazy {
-        openResource("access-token.json").use {
-            String(it.readBytes())
-        }
-    }
-
-    @BeforeEach
+    @Before
     fun setUp() {
         mockWebServer = MockWebServer()
         val retrofit = Retrofit.Builder()
@@ -68,7 +62,7 @@ internal class OAuthRemoteDataSourceImplTest {
                 ) {
                     MockResponse()
                         .setResponseCode(HttpsURLConnection.HTTP_OK)
-                        .setBody(accessTokenJson)
+                        .setBody(TestDataProvider.accessTokenJson)
                 } else {
                     MockResponse()
                         .setResponseCode(HttpsURLConnection.HTTP_BAD_REQUEST)
@@ -100,7 +94,7 @@ internal class OAuthRemoteDataSourceImplTest {
                 ) {
                     MockResponse()
                         .setResponseCode(HttpsURLConnection.HTTP_OK)
-                        .setBody(accessTokenJson)
+                        .setBody(TestDataProvider.accessTokenJson)
                 } else {
                     MockResponse()
                         .setResponseCode(HttpsURLConnection.HTTP_BAD_REQUEST)
@@ -132,7 +126,7 @@ internal class OAuthRemoteDataSourceImplTest {
                 ) {
                     MockResponse()
                         .setResponseCode(HttpsURLConnection.HTTP_OK)
-                        .setBody(accessTokenJson)
+                        .setBody(TestDataProvider.accessTokenJson)
                 } else {
                     MockResponse()
                         .setResponseCode(HttpsURLConnection.HTTP_BAD_REQUEST)
@@ -147,6 +141,37 @@ internal class OAuthRemoteDataSourceImplTest {
             .assertComplete()
     }
 
+    @Test
+    fun requestPassword() {
+        val email = "mock-email@mail.com-${System.currentTimeMillis()}"
+        mockWebServer.dispatcher = object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                assertRequestPasswordBody(
+                    jsonBody = request.body.readString(Charsets.UTF_8),
+                    email = email,
+                    oauthConfig = oauthConfig
+                )
+                return if (
+                    request.method == "POST"
+                    && request.requestUrl?.pathSegments
+                        ?.joinToString("/") == "passwords"
+                ) {
+                    MockResponse()
+                        .setResponseCode(HttpsURLConnection.HTTP_OK)
+                        .setBody(TestDataProvider.accessTokenJson)
+                } else {
+                    MockResponse()
+                        .setResponseCode(HttpsURLConnection.HTTP_BAD_REQUEST)
+                }
+            }
+        }
+
+        remoteDataSource.requestPassword(email)
+            .test()
+            .awaitCount(1)
+            .assertNoErrors()
+            .assertComplete()
+    }
 }
 
 private fun assertLoginRequestBody(
@@ -156,11 +181,11 @@ private fun assertLoginRequestBody(
     oauthConfig: OAuthConfig
 ) {
     val body = Gson().fromJson(jsonBody, LoginRequestBody::class.java)
-    Assertions.assertEquals(email, body.email)
-    Assertions.assertEquals(password, body.password)
-    Assertions.assertEquals(oauthConfig.clientId, body.client_id)
-    Assertions.assertEquals(oauthConfig.clientSecret, body.client_secret)
-    Assertions.assertEquals("password", body.grant_type)
+    Assert.assertEquals(email, body.email)
+    Assert.assertEquals(password, body.password)
+    Assert.assertEquals(oauthConfig.clientId, body.client_id)
+    Assert.assertEquals(oauthConfig.clientSecret, body.client_secret)
+    Assert.assertEquals("password", body.grant_type)
 }
 
 private fun assertRefreshTokenBody(
@@ -169,10 +194,10 @@ private fun assertRefreshTokenBody(
     oauthConfig: OAuthConfig
 ) {
     val body = Gson().fromJson(jsonBody, RefreshTokenBody::class.java)
-    Assertions.assertEquals(refreshToken, body.refresh_token)
-    Assertions.assertEquals(oauthConfig.clientId, body.client_id)
-    Assertions.assertEquals(oauthConfig.clientSecret, body.client_secret)
-    Assertions.assertEquals("refresh_token", body.grant_type)
+    Assert.assertEquals(refreshToken, body.refresh_token)
+    Assert.assertEquals(oauthConfig.clientId, body.client_id)
+    Assert.assertEquals(oauthConfig.clientSecret, body.client_secret)
+    Assert.assertEquals("refresh_token", body.grant_type)
 }
 
 private fun assertRevokeTokenBody(
@@ -181,9 +206,20 @@ private fun assertRevokeTokenBody(
     oauthConfig: OAuthConfig
 ) {
     val body = Gson().fromJson(jsonBody, RevokeTokenBody::class.java)
-    Assertions.assertEquals(accessToken, body.token)
-    Assertions.assertEquals(oauthConfig.clientId, body.client_id)
-    Assertions.assertEquals(oauthConfig.clientSecret, body.client_secret)
+    Assert.assertEquals(accessToken, body.token)
+    Assert.assertEquals(oauthConfig.clientId, body.client_id)
+    Assert.assertEquals(oauthConfig.clientSecret, body.client_secret)
+}
+
+private fun assertRequestPasswordBody(
+    jsonBody: String,
+    email: String,
+    oauthConfig: OAuthConfig
+) {
+    val body = Gson().fromJson(jsonBody, RequestPasswordBody::class.java)
+    Assert.assertEquals(email, body.user.email)
+    Assert.assertEquals(oauthConfig.clientId, body.client_id)
+    Assert.assertEquals(oauthConfig.clientSecret, body.client_secret)
 }
 
 private class LoginRequestBody(
@@ -205,4 +241,14 @@ private class RevokeTokenBody(
     val token: String,
     val client_id: String,
     val client_secret: String,
+)
+
+private class RequestPasswordBody(
+    val client_id: String,
+    val client_secret: String,
+    val user: RequestPasswordUser
+)
+
+private class RequestPasswordUser(
+    val email: String
 )
