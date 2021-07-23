@@ -11,7 +11,7 @@ import com.tn07.survey.openResource
  * Created by toannguyen
  * Jul 23, 2021 at 14:00
  */
-object TestDataProvider {
+internal object TestDataProvider {
 
     val accessTokenJson: String by lazy {
         openResource("access-token.json").use {

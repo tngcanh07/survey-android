@@ -2,9 +2,9 @@ package com.tn07.survey.features.base
 
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.subjects.PublishSubject
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
 
 /**
  * Created by toannguyen
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 internal class BaseViewModelTest {
     private lateinit var viewModel: BaseViewModelTestImpl
 
-    @BeforeEach
+    @Before
     fun setUp() {
         viewModel = BaseViewModelTestImpl()
     }
@@ -24,10 +24,10 @@ internal class BaseViewModelTest {
         val disposable = subject.subscribe()
 
         viewModel.addDisposable(disposable)
-        Assertions.assertFalse(disposable.isDisposed)
+        Assert.assertFalse(disposable.isDisposed)
 
         viewModel.clear()
-        Assertions.assertTrue(disposable.isDisposed)
+        Assert.assertTrue(disposable.isDisposed)
     }
 
     @Test
@@ -37,7 +37,7 @@ internal class BaseViewModelTest {
 
         viewModel.clear()
         viewModel.addDisposable(disposable)
-        Assertions.assertFalse(disposable.isDisposed)
+        Assert.assertFalse(disposable.isDisposed)
     }
 }
 

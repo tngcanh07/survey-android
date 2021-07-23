@@ -108,11 +108,39 @@ android {
     }
 
     tasks.withType<Test> {
-        useJUnitPlatform()
         configure<JacocoTaskExtension> {
             isIncludeNoLocationClasses = true
         }
     }
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
+}
+
+tasks.create(name = "jacocoStagingDebugTestReport", type = JacocoReport::class) {
+    setDependsOn(setOf("testStagingDebugUnitTest", "createStagingDebugCoverageReport"))
+    classDirectories.setFrom(fileTree("$buildDir/tmp/kotlin-classes/stagingDebug") {
+        setExcludes(
+            listOf(
+                "**/com/tn07/survey/di/**.class",
+                "**/com/tn07/survey/**/view/**.class",
+                "**/**Fragment.**",
+                "**/**FragmentArgs.**",
+                "**/**Activity.**",
+                "**/**Adapter.**",
+                "**/**ViewHolder.**"
+            )
+        )
+    })
+    sourceDirectories.setFrom("$projectDir/src/main/java")
+    executionData.setFrom(fileTree(projectDir) {
+        setIncludes(
+            listOf(
+                "$buildDir/jacoco/testStagingDebugUnitTest.exec",
+                "jacoco.exec"
+            )
+        )
+    })
 }
 
 dependencies {
@@ -142,26 +170,7 @@ dependencies {
     implementation(Libs.RX_BINDING)
     implementation(Libs.BLURRY)
 
-    testImplementation(Libs.JUNIT)
+    testImplementation(Libs.JUNIT4)
     testImplementation(Libs.MOCKITO)
-}
-
-tasks.create(name = "jacocoStagingTestReport", type = JacocoReport::class) {
-    setDependsOn(setOf("testStagingDebugUnitTest", "createStagingDebugCoverageReport"))
-    classDirectories.setFrom(fileTree("$buildDir/tmp/kotlin-classes/stagingDebug") {
-        setExcludes(
-            listOf(
-                "**/com/tn07/survey/di/**.class"
-            )
-        )
-    })
-    sourceDirectories.setFrom("$projectDir/src/main/java")
-    executionData.setFrom(fileTree(projectDir) {
-        setIncludes(
-            listOf(
-                "$buildDir/jacoco/testStagingDebugUnitTest.exec",
-                "jacoco.exec"
-            )
-        )
-    })
+    testImplementation(Libs.ROBOLECTRIC)
 }

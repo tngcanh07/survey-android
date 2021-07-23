@@ -58,6 +58,8 @@ class HomeFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.initUser()
+        viewModel.initSurveys()
         with(binding) {
             loadingOverlay.setOnClickListener { }
             navView.setNavigationItemSelectedListener {

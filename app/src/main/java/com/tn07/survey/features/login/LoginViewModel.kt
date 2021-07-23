@@ -9,7 +9,6 @@ import com.tn07.survey.features.login.transformer.LoginTransformer
 import com.tn07.survey.features.login.uimodel.FormError
 import com.tn07.survey.features.login.uimodel.LoginResultUiModel
 import com.tn07.survey.features.login.uimodel.LoginUiModel
-import com.tn07.survey.features.login.uimodel.TextFieldUiModel
 import com.tn07.survey.features.login.validator.LogInFormValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.core.BackpressureStrategy
@@ -50,12 +49,7 @@ class LoginViewModel @Inject constructor(
     private val loginUiModelEvents = PublishSubject.create<(LoginUiModel) -> LoginUiModel>()
 
     fun init() {
-        val initialUiModel = LoginUiModel(
-            passwordTextField = TextFieldUiModel(),
-            emailTextField = TextFieldUiModel(),
-            isLoading = false
-        )
-        _loginUiModel.onNext(initialUiModel)
+        _loginUiModel.onNext(transformer.initialLoginUiModel)
 
         loginUiModelEvents.toFlowable(BackpressureStrategy.BUFFER)
             .subscribeOn(schedulerProvider.io())
@@ -65,7 +59,6 @@ class LoginViewModel @Inject constructor(
                     ?.let(_loginUiModel::onNext)
             }
             .addToCompositeDisposable()
-
     }
 
     fun setEmail(email: String) {
