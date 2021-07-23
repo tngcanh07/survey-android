@@ -39,5 +39,7 @@ object Libs {
     const val GLIDE_COMPILER = "com.github.bumptech.glide:compiler:${Versions.GLIDE}"
 
     const val JUNIT = "org.junit.jupiter:junit-jupiter:${Versions.JUNIT}"
+    const val JUNIT4 = "junit:junit:${Versions.JUNIT4}"
     const val MOCKITO = "org.mockito:mockito-core:${Versions.MOCKITO}"
+    const val ROBOLECTRIC = "org.robolectric:robolectric:${Versions.ROBOLECTRIC}"
 }

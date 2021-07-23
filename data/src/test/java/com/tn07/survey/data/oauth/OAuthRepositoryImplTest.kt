@@ -8,8 +8,8 @@ import com.tn07.survey.domain.exceptions.ApiException
 import com.tn07.survey.domain.exceptions.ConnectionException
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.Before
+import org.junit.Test
 import org.mockito.Mockito
 import java.net.ConnectException
 
@@ -23,7 +23,7 @@ internal class OAuthRepositoryImplTest {
     private lateinit var localDataSource: OAuthLocalDataSource
 
 
-    @BeforeEach
+    @Before
     fun setUp() {
         remoteDataSource = Mockito.mock(OAuthRemoteDataSource::class.java)
         localDataSource = Mockito.mock(OAuthLocalDataSource::class.java)

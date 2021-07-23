@@ -33,6 +33,8 @@ object Versions {
     const val INDEFINITE_PAGER_INDICATOR = "1.4"
 
     const val JUNIT = "5.7.2"
+    const val JUNIT4 = "4.13"
     const val MOCKITO = "3.11.2"
     const val JACOCO = "0.8.7"
+    const val ROBOLECTRIC = "4.6.1"
 }

@@ -26,7 +26,6 @@ android {
 
     defaultConfig {
         minSdkVersion(Versions.MIN_SDK)
-        targetSdkVersion(Versions.TARGET_SDK)
         testBuildType = "debug"
     }
 
@@ -72,38 +71,22 @@ android {
     }
 
     tasks.withType<Test> {
-        useJUnitPlatform()
         configure<JacocoTaskExtension> {
             isIncludeNoLocationClasses = true
         }
     }
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
-dependencies {
-    implementation(project(Modules.DOMAIN))
-    implementation(Libs.KOTLIN_STDLIB)
-
-    api(Libs.RETROFIT)
-    implementation(Libs.RETROFIT_RX_JAVA3_ADAPTER)
-    implementation(Libs.RETROFIT_GSON_CONVERTER)
-    implementation(Libs.OKHTTP)
-    implementation(Libs.OKHTTP_LOGGING)
-    implementation(Libs.GSON)
-    implementation(Libs.RX_JAVA3)
-
-    implementation(Libs.HILT_ANDROID)
-    kapt(Libs.HILT_COMPILER)
-
-    testImplementation(Libs.JUNIT)
-    testImplementation(Libs.MOCKITO)
-    testImplementation(Libs.MOCK_WEBSERVER)
-}
 
 tasks.create(name = "jacocoTestReport", type = JacocoReport::class) {
     setDependsOn(setOf("testDebugUnitTest", "createDebugCoverageReport"))
     classDirectories.setFrom(fileTree("$buildDir/tmp/kotlin-classes/debug") {
         setExcludes(
             listOf(
+                "**/test/**",
                 "**/com/tn07/survey/data/di/**.class"
             )
         )
@@ -120,10 +103,13 @@ tasks.create(name = "jacocoTestReport", type = JacocoReport::class) {
 }
 
 tasks.create(name = "jacocoTestCoverageVerification", type = JacocoCoverageVerification::class) {
-    setDependsOn(setOf("testDebugUnitTest"))
+    setDependsOn(setOf("jacocoTestReport"))
     classDirectories.setFrom(fileTree("$buildDir/tmp/kotlin-classes/debug") {
         setExcludes(
-            listOf("**/test/**")
+            listOf(
+                "**/test/**",
+                "**/com/tn07/survey/data/di/**.class"
+            )
         )
     })
     executionData.setFrom(fileTree(projectDir) {
@@ -144,4 +130,25 @@ tasks.create(name = "jacocoTestCoverageVerification", type = JacocoCoverageVerif
             }
         }
     }
+}
+
+dependencies {
+    implementation(project(Modules.DOMAIN))
+    implementation(Libs.KOTLIN_STDLIB)
+
+    api(Libs.RETROFIT)
+    implementation(Libs.RETROFIT_RX_JAVA3_ADAPTER)
+    implementation(Libs.RETROFIT_GSON_CONVERTER)
+    implementation(Libs.OKHTTP)
+    implementation(Libs.OKHTTP_LOGGING)
+    implementation(Libs.GSON)
+    implementation(Libs.RX_JAVA3)
+
+    implementation(Libs.HILT_ANDROID)
+    kapt(Libs.HILT_COMPILER)
+
+    testImplementation(Libs.JUNIT4)
+    testImplementation(Libs.MOCKITO)
+    testImplementation(Libs.MOCK_WEBSERVER)
+    testImplementation(Libs.ROBOLECTRIC)
 }
