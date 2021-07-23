@@ -32,6 +32,8 @@ import javax.inject.Inject
  * Created by toannguyen
  * Jul 15, 2021 at 09:03
  */
+private const val DEBOUNCE_TEXT_CHANGE_EVENT = 250L
+
 @AndroidEntryPoint
 class LoginFragment : BaseFragment() {
 
@@ -207,9 +209,5 @@ class LoginFragment : BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object {
-        private const val DEBOUNCE_TEXT_CHANGE_EVENT = 250L
     }
 }

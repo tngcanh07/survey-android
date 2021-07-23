@@ -14,6 +14,15 @@ import javax.inject.Inject
  * Created by toannguyen
  * Jul 14, 2021 at 23:08
  */
+
+private const val KEY_STORE_ALIAS = "oauth2"
+private const val PREFS_NAME = "survey.prefs.oauth"
+private const val KEY_ACCESS_TOKEN = "survey.prefs.oauth.accessToken"
+private const val KEY_TOKEN_TYPE = "survey.prefs.oauth.tokenType"
+private const val KEY_REFRESH_TOKEN = "survey.prefs.oauth.refreshToken"
+private const val KEY_EXPIRES_IN = "survey.prefs.oauth.expiresIn"
+private const val KEY_CREATED_AT = "survey.prefs.oauth.createdAT"
+
 class OAuthLocalDataSourceImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val secretKeyManager: SecretKeyManager
@@ -114,15 +123,5 @@ class OAuthLocalDataSourceImpl @Inject constructor(
                 null
             }
         }
-    }
-
-    companion object {
-        private const val KEY_STORE_ALIAS = "oauth2"
-        private const val PREFS_NAME = "survey.prefs.oauth"
-        private const val KEY_ACCESS_TOKEN = "survey.prefs.oauth.accessToken"
-        private const val KEY_TOKEN_TYPE = "survey.prefs.oauth.tokenType"
-        private const val KEY_REFRESH_TOKEN = "survey.prefs.oauth.refreshToken"
-        private const val KEY_EXPIRES_IN = "survey.prefs.oauth.expiresIn"
-        private const val KEY_CREATED_AT = "survey.prefs.oauth.createdAT"
     }
 }

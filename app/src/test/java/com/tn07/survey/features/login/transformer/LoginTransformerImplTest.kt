@@ -6,6 +6,8 @@ import com.tn07.survey.R
 import com.tn07.survey.domain.exceptions.ApiException
 import com.tn07.survey.domain.exceptions.ConnectionException
 import com.tn07.survey.features.login.uimodel.FormError
+import com.tn07.survey.features.login.uimodel.INVALID_EMAIL
+import com.tn07.survey.features.login.uimodel.INVALID_PASSWORD
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -104,7 +106,7 @@ class LoginTransformerImplTest {
     @Test
     fun updateFormError_email() {
         val initialLoginUiModel = transformer.initialLoginUiModel
-        val error = FormError(FormError.INVALID_EMAIL)
+        val error = FormError(INVALID_EMAIL)
         val uiModel = transformer.updateFormError(initialLoginUiModel, error)
 
         Assert.assertEquals(
@@ -126,7 +128,7 @@ class LoginTransformerImplTest {
     @Test
     fun updateFormError_password() {
         val initialLoginUiModel = transformer.initialLoginUiModel
-        val error = FormError(FormError.INVALID_PASSWORD)
+        val error = FormError(INVALID_PASSWORD)
         val uiModel = transformer.updateFormError(initialLoginUiModel, error)
 
         Assert.assertEquals(

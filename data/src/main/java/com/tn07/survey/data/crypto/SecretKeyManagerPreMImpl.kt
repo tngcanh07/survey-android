@@ -13,6 +13,8 @@ import javax.inject.Inject
  * Created by toannguyen
  * Jul 16, 2021 at 21:16
  */
+private const val KEY_ALIAS_SUFFIX = "PreM"
+
 class SecretKeyManagerPreMImpl @Inject constructor(
     private val context: Context
 ) : SecretKeyManager {
@@ -51,9 +53,4 @@ class SecretKeyManagerPreMImpl @Inject constructor(
         keyGenerator.init(AES_KEY_SIZE, secureRandom)
         return keyGenerator.generateKey()
     }
-
-    companion object {
-        private const val KEY_ALIAS_SUFFIX = "PreM"
-    }
-
 }
