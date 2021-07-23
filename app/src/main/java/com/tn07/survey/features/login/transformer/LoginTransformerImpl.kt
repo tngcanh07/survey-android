@@ -5,6 +5,8 @@ import com.tn07.survey.R
 import com.tn07.survey.domain.exceptions.ApiException
 import com.tn07.survey.domain.exceptions.ConnectionException
 import com.tn07.survey.features.login.uimodel.FormError
+import com.tn07.survey.features.login.uimodel.INVALID_EMAIL
+import com.tn07.survey.features.login.uimodel.INVALID_PASSWORD
 import com.tn07.survey.features.login.uimodel.LoginResultUiModel
 import com.tn07.survey.features.login.uimodel.LoginUiModel
 import com.tn07.survey.features.login.uimodel.TextFieldUiModel
@@ -61,13 +63,13 @@ class LoginTransformerImpl @Inject constructor(
         uiModel: LoginUiModel,
         error: FormError
     ): LoginUiModel {
-        val emailErrorMessage = if (error.hasError(FormError.INVALID_EMAIL)) {
+        val emailErrorMessage = if (error.hasError(INVALID_EMAIL)) {
             getString(R.string.error_invalid_email)
         } else {
             null
         }
 
-        val passwordErrorMessage = if (error.hasError(FormError.INVALID_PASSWORD)) {
+        val passwordErrorMessage = if (error.hasError(INVALID_PASSWORD)) {
             getString(R.string.error_invalid_password)
         } else {
             null

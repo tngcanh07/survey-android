@@ -23,6 +23,8 @@ import javax.inject.Inject
  * Created by toannguyen
  * Jul 15, 2021 at 09:04
  */
+private const val DEBOUNCE_UI_MODEL = 100L
+
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
@@ -115,9 +117,5 @@ class LoginViewModel @Inject constructor(
         } else {
             _loginResult.onNext(transformer.transformErrorResult(throwable))
         }
-    }
-
-    companion object {
-        const val DEBOUNCE_UI_MODEL = 100L
     }
 }

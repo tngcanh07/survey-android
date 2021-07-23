@@ -40,7 +40,7 @@ class SurveyViewHolder(
             Glide.with(backgroundImage)
                 .load(uiModel.backgroundImageUrl)
                 .into(backgroundImage)
-            
+
             systemBarInsets?.let {
                 surveyContentBoundary.updateLayoutParams<ConstraintLayout.LayoutParams> {
                     applySystemBarInsets(it)

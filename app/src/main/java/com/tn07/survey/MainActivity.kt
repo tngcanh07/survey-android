@@ -12,7 +12,6 @@ import com.tn07.survey.features.detaillandingpage.DetailLandingPageNavigator
 import com.tn07.survey.features.home.HomeNavigator
 import com.tn07.survey.features.login.LoginNavigator
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import javax.inject.Inject
 

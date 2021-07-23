@@ -26,6 +26,10 @@ import javax.inject.Inject
  * Created by toannguyen
  * Jul 17, 2021 at 15:59
  */
+private const val FIRST_PAGE_INDEX = 1
+private const val PAGE_SIZE = 5
+private const val PREFETCH_OFFSET = 1
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getUserUseCase: GetUserUseCase,
@@ -158,12 +162,6 @@ class HomeViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         loadingSurveyDisposable?.dispose()
-    }
-
-    companion object {
-        private const val FIRST_PAGE_INDEX = 1
-        private const val PAGE_SIZE = 5
-        private const val PREFETCH_OFFSET = 1
     }
 }
 

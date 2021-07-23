@@ -9,4 +9,3 @@ data class LoginUiModel(
     val emailTextField: TextFieldUiModel,
     val isLoading: Boolean
 )
-

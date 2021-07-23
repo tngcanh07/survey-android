@@ -2,6 +2,8 @@ package com.tn07.survey.features.login.validator
 
 import android.util.Patterns
 import com.tn07.survey.features.login.uimodel.FormError
+import com.tn07.survey.features.login.uimodel.INVALID_EMAIL
+import com.tn07.survey.features.login.uimodel.INVALID_PASSWORD
 import javax.inject.Inject
 
 /**
@@ -19,7 +21,7 @@ class LogInFormValidatorImpl @Inject constructor() : LogInFormValidator {
 
     private fun validatePassword(password: String): Int {
         return if (password.isEmpty()) {
-            FormError.INVALID_PASSWORD
+            INVALID_PASSWORD
         } else {
             0
         }
@@ -27,7 +29,7 @@ class LogInFormValidatorImpl @Inject constructor() : LogInFormValidator {
 
     private fun validateEmail(email: String): Int {
         return if (email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email).find()) {
-            FormError.INVALID_EMAIL
+            INVALID_EMAIL
         } else {
             0
         }
