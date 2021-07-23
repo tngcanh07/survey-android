@@ -37,4 +37,6 @@ object Versions {
     const val MOCKITO = "3.11.2"
     const val JACOCO = "0.8.7"
     const val ROBOLECTRIC = "4.6.1"
+    const val ANDROID_TEST_RUNNER = "1.4.0"
+    const val ANDROID_JUNIT_EXT = "1.1.3"
 }

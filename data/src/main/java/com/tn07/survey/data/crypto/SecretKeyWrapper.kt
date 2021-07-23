@@ -72,6 +72,7 @@ class SecretKeyWrapper(context: Context, alias: String) {
         return mCipher.unwrap(blob, "AES", Cipher.SECRET_KEY) as SecretKey
     }
 
+    @SuppressWarnings("deprecation")
     @Throws(GeneralSecurityException::class)
     private fun generateKeyPair(context: Context, alias: String) {
         val start: Calendar = Calendar.getInstance()

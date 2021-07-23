@@ -1,8 +1,8 @@
 package com.tn07.survey.data.oauth.datasources.remote
 
 import com.google.gson.Gson
+import com.tn07.survey.data.TestDataProvider
 import com.tn07.survey.data.api.OAuthConfig
-import com.tn07.survey.openResource
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -23,12 +23,6 @@ internal class OAuthRemoteDataSourceImplTest {
     private lateinit var mockWebServer: MockWebServer
     private lateinit var remoteDataSource: OAuthRemoteDataSourceImpl
     private lateinit var oauthConfig: OAuthConfig
-
-    private val accessTokenJson: String by lazy {
-        openResource("access-token.json").use {
-            String(it.readBytes())
-        }
-    }
 
     @Before
     fun setUp() {
@@ -68,7 +62,7 @@ internal class OAuthRemoteDataSourceImplTest {
                 ) {
                     MockResponse()
                         .setResponseCode(HttpsURLConnection.HTTP_OK)
-                        .setBody(accessTokenJson)
+                        .setBody(TestDataProvider.accessTokenJson)
                 } else {
                     MockResponse()
                         .setResponseCode(HttpsURLConnection.HTTP_BAD_REQUEST)
@@ -100,7 +94,7 @@ internal class OAuthRemoteDataSourceImplTest {
                 ) {
                     MockResponse()
                         .setResponseCode(HttpsURLConnection.HTTP_OK)
-                        .setBody(accessTokenJson)
+                        .setBody(TestDataProvider.accessTokenJson)
                 } else {
                     MockResponse()
                         .setResponseCode(HttpsURLConnection.HTTP_BAD_REQUEST)
@@ -132,7 +126,7 @@ internal class OAuthRemoteDataSourceImplTest {
                 ) {
                     MockResponse()
                         .setResponseCode(HttpsURLConnection.HTTP_OK)
-                        .setBody(accessTokenJson)
+                        .setBody(TestDataProvider.accessTokenJson)
                 } else {
                     MockResponse()
                         .setResponseCode(HttpsURLConnection.HTTP_BAD_REQUEST)
@@ -147,6 +141,37 @@ internal class OAuthRemoteDataSourceImplTest {
             .assertComplete()
     }
 
+    @Test
+    fun requestPassword() {
+        val email = "mock-email@mail.com-${System.currentTimeMillis()}"
+        mockWebServer.dispatcher = object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                assertRequestPasswordBody(
+                    jsonBody = request.body.readString(Charsets.UTF_8),
+                    email = email,
+                    oauthConfig = oauthConfig
+                )
+                return if (
+                    request.method == "POST"
+                    && request.requestUrl?.pathSegments
+                        ?.joinToString("/") == "passwords"
+                ) {
+                    MockResponse()
+                        .setResponseCode(HttpsURLConnection.HTTP_OK)
+                        .setBody(TestDataProvider.accessTokenJson)
+                } else {
+                    MockResponse()
+                        .setResponseCode(HttpsURLConnection.HTTP_BAD_REQUEST)
+                }
+            }
+        }
+
+        remoteDataSource.requestPassword(email)
+            .test()
+            .awaitCount(1)
+            .assertNoErrors()
+            .assertComplete()
+    }
 }
 
 private fun assertLoginRequestBody(
@@ -186,6 +211,17 @@ private fun assertRevokeTokenBody(
     Assert.assertEquals(oauthConfig.clientSecret, body.client_secret)
 }
 
+private fun assertRequestPasswordBody(
+    jsonBody: String,
+    email: String,
+    oauthConfig: OAuthConfig
+) {
+    val body = Gson().fromJson(jsonBody, RequestPasswordBody::class.java)
+    Assert.assertEquals(email, body.user.email)
+    Assert.assertEquals(oauthConfig.clientId, body.client_id)
+    Assert.assertEquals(oauthConfig.clientSecret, body.client_secret)
+}
+
 private class LoginRequestBody(
     val email: String,
     val password: String,
@@ -205,4 +241,14 @@ private class RevokeTokenBody(
     val token: String,
     val client_id: String,
     val client_secret: String,
+)
+
+private class RequestPasswordBody(
+    val client_id: String,
+    val client_secret: String,
+    val user: RequestPasswordUser
+)
+
+private class RequestPasswordUser(
+    val email: String
 )

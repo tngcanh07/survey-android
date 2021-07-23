@@ -1,7 +1,6 @@
 package com.tn07.survey.data.crypto
 
 import android.annotation.TargetApi
-import android.content.Context
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
@@ -14,9 +13,7 @@ import javax.crypto.SecretKey
  * Jul 16, 2021 at 21:16
  */
 @TargetApi(Build.VERSION_CODES.M)
-class SecretKeyManagerImpl(
-    private val context: Context
-) : SecretKeyManager {
+class SecretKeyManagerImpl : SecretKeyManager {
 
     override val aesCipherAlgorithm: String
         get() = "AES/CBC/PKCS7Padding"

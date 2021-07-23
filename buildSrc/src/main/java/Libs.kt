@@ -42,4 +42,6 @@ object Libs {
     const val JUNIT4 = "junit:junit:${Versions.JUNIT4}"
     const val MOCKITO = "org.mockito:mockito-core:${Versions.MOCKITO}"
     const val ROBOLECTRIC = "org.robolectric:robolectric:${Versions.ROBOLECTRIC}"
+    const val ANDROID_TEST_RUNNER = "androidx.test:runner:${Versions.ANDROID_TEST_RUNNER}"
+    const val ANDROID_JUNIT_EXT = "androidx.test.ext:junit:${Versions.ANDROID_JUNIT_EXT}"
 }

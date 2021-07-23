@@ -27,6 +27,7 @@ android {
     defaultConfig {
         minSdkVersion(Versions.MIN_SDK)
         testBuildType = "debug"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -80,7 +81,6 @@ android {
     }
 }
 
-
 tasks.create(name = "jacocoTestReport", type = JacocoReport::class) {
     setDependsOn(setOf("testDebugUnitTest", "createDebugCoverageReport"))
     classDirectories.setFrom(fileTree("$buildDir/tmp/kotlin-classes/debug") {
@@ -122,7 +122,7 @@ tasks.create(name = "jacocoTestCoverageVerification", type = JacocoCoverageVerif
     })
     violationRules {
         rule {
-            element = "PACKAGE"
+            element = "BUNDLE"
             limit {
                 counter = "INSTRUCTION"
                 value = "COVEREDRATIO"
@@ -151,4 +151,8 @@ dependencies {
     testImplementation(Libs.MOCKITO)
     testImplementation(Libs.MOCK_WEBSERVER)
     testImplementation(Libs.ROBOLECTRIC)
+
+    androidTestImplementation(Libs.JUNIT4)
+    androidTestImplementation(Libs.ANDROID_TEST_RUNNER)
+    androidTestImplementation(Libs.ANDROID_JUNIT_EXT)
 }

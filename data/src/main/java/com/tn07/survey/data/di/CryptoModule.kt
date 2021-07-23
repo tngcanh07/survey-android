@@ -25,7 +25,7 @@ class CryptoModule {
         @ApplicationContext context: Context
     ): SecretKeyManager {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            SecretKeyManagerImpl(context)
+            SecretKeyManagerImpl()
         } else {
             SecretKeyManagerPreMImpl(context)
         }
