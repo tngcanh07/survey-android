@@ -58,21 +58,21 @@ class OAuthLocalDataSourceImpl @Inject constructor(
         val secretKey = secretKeyManager.getOrCreateSecretKey(KEY_STORE_ALIAS)
         val algorithm = secretKeyManager.aesCipherAlgorithm
         sharedPreferences.edit()
-            .also {
-                it.putString(
+            .apply {
+                putString(
                     KEY_ACCESS_TOKEN,
                     encryptAes(accessToken.accessToken, secretKey, algorithm)
                 )
-                it.putString(
+                putString(
                     KEY_TOKEN_TYPE,
                     encryptAes(accessToken.tokenType, secretKey, algorithm)
                 )
-                it.putString(
+                putString(
                     KEY_REFRESH_TOKEN,
                     encryptAes(accessToken.refreshToken, secretKey, algorithm)
                 )
-                it.putLong(KEY_CREATED_AT, accessToken.createdAt)
-                it.putLong(KEY_EXPIRES_IN, accessToken.expiresIn)
+                putLong(KEY_CREATED_AT, accessToken.createdAt)
+                putLong(KEY_EXPIRES_IN, accessToken.expiresIn)
             }
             .apply()
 
