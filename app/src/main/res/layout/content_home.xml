@@ -61,14 +61,24 @@
         app:layout_constraintTop_toTopOf="@id/home_content_boundary"
         app:srcCompat="@drawable/ic_avatar_placeholder" />
 
-    <com.rbrooks.indefinitepagerindicator.IndefinitePagerIndicator
+    <com.google.android.material.tabs.TabLayout
         android:id="@+id/page_indicator"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginBottom="188dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="172dp"
+        android:background="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="@id/home_content_boundary"
-        app:layout_constraintStart_toStartOf="@id/home_content_boundary" />
+        app:layout_constraintEnd_toEndOf="@+id/home_content_boundary"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="@id/home_content_boundary"
+        app:tabBackground="@drawable/tab_selector"
+        app:tabGravity="start"
+        app:tabIndicatorHeight="0dp"
+        app:tabMaxWidth="16dp"
+        app:tabMinWidth="16dp"
+        app:tabMode="scrollable" />
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/loading_next_indicator"

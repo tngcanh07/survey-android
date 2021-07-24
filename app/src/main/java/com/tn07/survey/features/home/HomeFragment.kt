@@ -9,6 +9,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.google.android.material.tabs.TabLayoutMediator
 import com.tn07.survey.R
 import com.tn07.survey.databinding.FragmentHomeBinding
 import com.tn07.survey.databinding.NavHeaderHomeBinding
@@ -77,7 +78,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                             swipeRefreshLayout.isEnabled = state == ViewPager2.SCROLL_STATE_IDLE
                         }
                     })
-                pageIndicator.attachToViewPager2(surveyViewPager)
+                TabLayoutMediator(
+                    binding.contentHomePage.pageIndicator,
+                    binding.contentHomePage.surveyViewPager
+                ) { _, _ ->
+                }.attach()
             }
             errorLayout.retryButton.setOnClickListener { viewModel.refreshSurveys() }
         }
