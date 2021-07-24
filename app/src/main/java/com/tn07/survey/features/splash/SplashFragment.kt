@@ -25,15 +25,23 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(FragmentSplashBinding
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         binding.splashBranchIcon.fadeInAnimation(
             duration = SPLASH_SCREEN_DURATION,
             onAnimationEnd = {
-                if (viewModel.isLoggedIn) {
-                    navigator.navigateToHome()
-                } else {
-                    navigator.navigateToLogin()
-                }
-            })
+                processToSurveyApp()
+            },
+            onAnimationCancel = {
+                processToSurveyApp()
+            }
+        )
+    }
+
+    private fun processToSurveyApp() {
+        if (viewModel.isLoggedIn) {
+            navigator.navigateToHome()
+        } else {
+            navigator.navigateToLogin()
+        }
     }
 }
