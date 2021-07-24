@@ -3,6 +3,7 @@ package com.tn07.survey.domain.usecases
 import com.tn07.survey.domain.entities.Pageable
 import com.tn07.survey.domain.entities.Survey
 import com.tn07.survey.domain.repositories.SurveyRepository
+import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 
@@ -22,5 +23,9 @@ class GetSurveyUseCaseImpl @Inject constructor(
             page = page,
             pageSize = pageSize
         )
+    }
+
+    override fun getLocalSurveys(): Maybe<List<Survey>> {
+        return repository.getLocalSurveys()
     }
 }

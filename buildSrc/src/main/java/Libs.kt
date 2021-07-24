@@ -33,6 +33,10 @@ object Libs {
     const val OKHTTP_LOGGING = "com.squareup.okhttp3:logging-interceptor:${Versions.OKHTTP}"
     const val MOCK_WEBSERVER = "com.squareup.okhttp3:mockwebserver:${Versions.OKHTTP}"
 
+    const val ROOM_RUNTIME = "androidx.room:room-runtime:${Versions.ROOM}"
+    const val ROOM_COMPILER = "androidx.room:room-compiler:${Versions.ROOM}"
+    const val ROOM_RX_JAVA3 = "androidx.room:room-rxjava3:${Versions.ROOM}"
+
     const val GLIDE_RUNTIME = "com.github.bumptech.glide:glide:${Versions.GLIDE}"
     const val GLIDE_COMPILER = "com.github.bumptech.glide:compiler:${Versions.GLIDE}"
 

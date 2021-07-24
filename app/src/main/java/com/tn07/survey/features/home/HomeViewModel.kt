@@ -77,7 +77,26 @@ class HomeViewModel @Inject constructor(
     }
 
     fun initSurveys() {
-        checkAndLoadSurveyIfNeeded()
+        if (_surveyListResult.value.totalPage == null) {
+            loadingSurveyDisposable = getSurveyUseCase.getLocalSurveys()
+                .doOnSuccess {
+                    val surveyUiModels = it.map(transformer::transformSurvey)
+                    val surveyData = _surveyListResult.value
+                    if (surveyData.totalPage == null) {
+                        val localSurveyData = surveyData.copy(items = surveyUiModels)
+                        _surveyListResult.onNext(localSurveyData)
+                        _homeState.onNext(HomeState.Survey(isLoadingNext = false))
+                    }
+                }
+                .ignoreElement()
+                .onErrorComplete()
+                .subscribeOn(schedulerProvider.io())
+                .subscribe {
+                    checkAndLoadSurveyIfNeeded()
+                }
+        } else {
+            checkAndLoadSurveyIfNeeded()
+        }
     }
 
     private fun loadUser() {
@@ -117,22 +136,22 @@ class HomeViewModel @Inject constructor(
     @Synchronized
     private fun loadNextPage() {
         if (loadingSurveyDisposable?.isDisposed != false && hasMore) {
-            val currentData = _surveyListResult.value
-            val nextPage = currentData.page + 1
+            val nextPage = _surveyListResult.value.page + 1
             loadingSurveyDisposable = getSurveyUseCase.getSurveys(nextPage, PAGE_SIZE)
                 .doOnSubscribe {
-                    if (currentData.items.isEmpty()) {
+                    if (_surveyListResult.value.items.isEmpty()) {
                         _homeState.onNext(HomeState.Loading)
                     } else {
                         _homeState.onNext(HomeState.Survey(isLoadingNext = true))
                     }
                 }
+                .subscribeOn(schedulerProvider.io())
                 .subscribe({
                     mergeSurveyData(it)
                     _homeState.onNext(HomeState.Survey(isLoadingNext = false))
                 }, {
                     val errorMessage = transformer.transformErrorMessage(it)
-                    if (currentData.items.isEmpty()) {
+                    if (_surveyListResult.value.items.isEmpty()) {
                         _homeState.onNext(HomeState.Error(errorMessage))
                     } else {
                         _homeState.onNext(HomeState.Survey(isLoadingNext = false))
@@ -154,8 +173,10 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun checkAndLoadSurveyIfNeeded() {
-        if (currentSurveyItem + PREFETCH_OFFSET >= _surveyListResult.value.items.lastIndex) {
-            loadNextPage()
+        with(_surveyListResult.value) {
+            if (totalPage == null || currentSurveyItem + PREFETCH_OFFSET >= items.lastIndex) {
+                loadNextPage()
+            }
         }
     }
 
