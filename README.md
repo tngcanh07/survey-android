@@ -38,7 +38,8 @@ apiConfigs.test.password="{LOGIN-PASSWORD}"
 - [RxBinding](https://github.com/JakeWharton/RxBinding)
 - [Blurry](https://github.com/wasabeef/Blurry)
 - [Shimmer](https://github.com/facebook/shimmer-android)
-- [Android-Indefinite-Pager-Indicator](https://github.com/wching/Android-Indefinite-Pager-Indicator)
 - [Mockito](https://github.com/mockito/mockito)
-- JUnit5
+- [Robolectric](http://robolectric.org/getting-started/)
+- [Jacoco](https://github.com/jacoco/jacoco)
+- JUnit
 - and many support libraries from [Android Jetpack](https://maven.google.com/web/index.html)
