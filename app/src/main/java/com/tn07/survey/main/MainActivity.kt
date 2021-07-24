@@ -18,7 +18,6 @@ class MainActivity : BaseActivity() {
             return navHostFragment.navController
         }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
