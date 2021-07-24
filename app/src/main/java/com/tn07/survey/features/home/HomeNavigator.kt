@@ -11,4 +11,6 @@ interface HomeNavigator {
         description: String,
         coverImageUrl: String
     )
+
+    fun navigateLogoutSuccess()
 }

@@ -151,7 +151,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             .observeOn(schedulerProvider.mainThread())
             .subscribe { result: LogoutResultUiModel ->
                 binding.loadingOverlay.visibility = View.GONE
-                if (result is LogoutResultUiModel.Error) {
+                if (result is LogoutResultUiModel.Success) {
+                    navigator.navigateLogoutSuccess()
+                } else {
                     toast("Failed: $result")
                 }
             }
