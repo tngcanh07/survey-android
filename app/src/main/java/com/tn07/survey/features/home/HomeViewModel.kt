@@ -1,5 +1,6 @@
 package com.tn07.survey.features.home
 
+import com.tn07.survey.data.survey.SURVEY_FIRST_PAGE_INDEX
 import com.tn07.survey.domain.entities.Pageable
 import com.tn07.survey.domain.entities.Survey
 import com.tn07.survey.domain.usecases.GetSurveyUseCase
@@ -26,7 +27,6 @@ import javax.inject.Inject
  * Created by toannguyen
  * Jul 17, 2021 at 15:59
  */
-private const val FIRST_PAGE_INDEX = 1
 private const val PAGE_SIZE = 5
 private const val PREFETCH_OFFSET = 1
 
@@ -82,7 +82,7 @@ class HomeViewModel @Inject constructor(
                 .doOnSuccess {
                     val surveyUiModels = it.map(transformer::transformSurvey)
                     val surveyData = _surveyListResult.value
-                    if (surveyData.totalPage == null) {
+                    if (surveyData.totalPage == null && surveyUiModels.isNotEmpty()) {
                         val localSurveyData = surveyData.copy(items = surveyUiModels)
                         _surveyListResult.onNext(localSurveyData)
                         _homeState.onNext(HomeState.Survey(isLoadingNext = false))
@@ -92,6 +92,7 @@ class HomeViewModel @Inject constructor(
                 .onErrorComplete()
                 .subscribeOn(schedulerProvider.io())
                 .subscribe {
+                    loadingSurveyDisposable = null
                     checkAndLoadSurveyIfNeeded()
                 }
         } else {
@@ -118,7 +119,7 @@ class HomeViewModel @Inject constructor(
 
     private fun mergeSurveyData(data: Pageable<Survey>) {
         val currentState = _surveyListResult.value
-        val items = if (data.page == FIRST_PAGE_INDEX) {
+        val items = if (data.page == SURVEY_FIRST_PAGE_INDEX) {
             data.items.map(transformer::transformSurvey)
         } else {
             currentState.items + data.items.map(transformer::transformSurvey)

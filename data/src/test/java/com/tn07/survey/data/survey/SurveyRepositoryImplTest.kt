@@ -4,9 +4,14 @@ import com.tn07.survey.data.TestDataProvider
 import com.tn07.survey.data.db.entity.SurveyEntity
 import com.tn07.survey.data.survey.datasources.local.SurveyLocalDataSource
 import com.tn07.survey.data.survey.datasources.remote.SurveyRemoteDataSource
+import com.tn07.survey.domain.entities.AccessToken
+import com.tn07.survey.domain.entities.AnonymousToken
+import com.tn07.survey.domain.entities.Token
 import com.tn07.survey.domain.exceptions.ApiException
+import com.tn07.survey.domain.repositories.OAuthRepository
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -27,10 +32,25 @@ class SurveyRepositoryImplTest {
     @Mock
     private lateinit var localDataSource: SurveyLocalDataSource
 
+    @Mock
+    private lateinit var oauthRepository: OAuthRepository
+    private lateinit var tokenSubject: BehaviorSubject<Token>
+
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-        repository = SurveyRepositoryImpl(remoteDataSource, localDataSource)
+        tokenSubject = BehaviorSubject.createDefault(Mockito.mock(AccessToken::class.java))
+        Mockito.`when`(oauthRepository.getTokenObservable()).thenReturn(tokenSubject)
+        repository = SurveyRepositoryImpl(remoteDataSource, localDataSource, oauthRepository)
+    }
+
+    @Test
+    fun clearSurveysWhenUserLoggedOut() {
+        tokenSubject.onNext(AnonymousToken)
+        Mockito.verify(localDataSource).clearSurveys()
+
+        tokenSubject.onNext(Mockito.mock(AccessToken::class.java))
+        Mockito.verifyNoMoreInteractions(localDataSource)
     }
 
     @Test
