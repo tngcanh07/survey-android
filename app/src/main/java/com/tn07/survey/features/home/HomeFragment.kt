@@ -80,7 +80,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                     })
                 TabLayoutMediator(
                     binding.contentHomePage.pageIndicator,
-                    binding.contentHomePage.surveyViewPager
+                    binding.contentHomePage.surveyViewPager,
+                    true,
+                    false
                 ) { _, _ ->
                 }.attach()
             }
