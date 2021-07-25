@@ -3,10 +3,10 @@ package com.tn07.survey.data.oauth.datasources.local
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
+import com.tn07.survey.data.crypto.LegacySecretKeyManager
 import com.tn07.survey.data.crypto.SecretKeyManager
 import com.tn07.survey.data.crypto.decryptAes
 import com.tn07.survey.data.crypto.encryptAes
-import com.tn07.survey.data.di.qualifier.PreMQualifier
 import com.tn07.survey.data.oauth.models.AccessTokenDataModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.security.GeneralSecurityException
@@ -29,7 +29,7 @@ private const val KEY_CREATED_AT = "survey.prefs.oauth.createdAT"
 class OAuthLocalDataSourceImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val secretKeyManager: SecretKeyManager,
-    @PreMQualifier private val legacyKeyManager: SecretKeyManager
+    private val legacyKeyManager: LegacySecretKeyManager
 ) : OAuthLocalDataSource {
 
     private val locker = Any()

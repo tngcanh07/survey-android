@@ -45,12 +45,4 @@ class SecretKeyManagerImpl : SecretKeyManager {
         val keyEntry = androidKeyStore.getEntry(keyAlias, null) as KeyStore.SecretKeyEntry
         return keyEntry.secretKey
     }
-
-    override fun isExist(keyAlias: String): Boolean {
-        return androidKeyStore.containsAlias(keyAlias)
-    }
-
-    override fun delete(keyAlias: String) {
-        androidKeyStore.deleteEntry(keyAlias)
-    }
 }

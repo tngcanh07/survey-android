@@ -10,8 +10,4 @@ interface SecretKeyManager {
     val aesCipherAlgorithm: String
 
     fun getOrCreateSecretKey(keyAlias: String): SecretKey
-
-    fun isExist(keyAlias: String): Boolean
-
-    fun delete(keyAlias: String)
 }

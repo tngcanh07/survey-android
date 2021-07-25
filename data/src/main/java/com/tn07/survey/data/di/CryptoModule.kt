@@ -2,10 +2,10 @@ package com.tn07.survey.data.di
 
 import android.content.Context
 import android.os.Build
+import com.tn07.survey.data.crypto.LegacySecretKeyManager
 import com.tn07.survey.data.crypto.SecretKeyManager
 import com.tn07.survey.data.crypto.SecretKeyManagerImpl
 import com.tn07.survey.data.crypto.SecretKeyManagerPreMImpl
-import com.tn07.survey.data.di.qualifier.PreMQualifier
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,10 +34,9 @@ class CryptoModule {
 
     @Provides
     @Singleton
-    @PreMQualifier
     fun providesLegacyKeyManager(
         @ApplicationContext context: Context
-    ): SecretKeyManager {
+    ): LegacySecretKeyManager {
         return SecretKeyManagerPreMImpl(context)
     }
 }

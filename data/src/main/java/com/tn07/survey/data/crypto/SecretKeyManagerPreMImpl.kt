@@ -17,7 +17,7 @@ private const val KEY_ALIAS_SUFFIX = "PreM"
 
 class SecretKeyManagerPreMImpl @Inject constructor(
     private val context: Context
-) : SecretKeyManager {
+) : LegacySecretKeyManager {
 
     override val aesCipherAlgorithm: String
         get() = "AES/CBC/PKCS5Padding"
