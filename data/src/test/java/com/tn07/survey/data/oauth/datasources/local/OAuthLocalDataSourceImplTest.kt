@@ -2,6 +2,7 @@ package com.tn07.survey.data.oauth.datasources.local
 
 import android.content.Context
 import androidx.test.platform.app.InstrumentationRegistry
+import com.tn07.survey.data.crypto.LegacySecretKeyManager
 import com.tn07.survey.data.crypto.SecretKeyManager
 import com.tn07.survey.data.oauth.models.AccessTokenDataModel
 import org.junit.Assert
@@ -24,6 +25,7 @@ class OAuthLocalDataSourceImplTest {
 
     private lateinit var dataSource: OAuthLocalDataSourceImpl
     private lateinit var secretKeyManager: SecretKeyManager
+    private lateinit var legacyKeyManager: LegacySecretKeyManager
     private lateinit var secretKey: SecretKey
 
     private val context: Context
@@ -32,7 +34,8 @@ class OAuthLocalDataSourceImplTest {
     @Before
     fun setUp() {
         secretKeyManager = Mockito.mock(SecretKeyManager::class.java)
-        dataSource = OAuthLocalDataSourceImpl(context, secretKeyManager)
+        legacyKeyManager = Mockito.mock(LegacySecretKeyManager::class.java)
+        dataSource = OAuthLocalDataSourceImpl(context, secretKeyManager, legacyKeyManager)
 
         val keyGen: KeyGenerator = KeyGenerator.getInstance("AES")
         val random = SecureRandom()
@@ -60,13 +63,17 @@ class OAuthLocalDataSourceImplTest {
         Assert.assertEquals(accessToken, memoryAccessToken)
 
         // from disk
-        val diskAccessToken = OAuthLocalDataSourceImpl(context, secretKeyManager).getAccessToken()
+        val diskAccessToken = OAuthLocalDataSourceImpl(context, secretKeyManager, legacyKeyManager)
+            .getAccessToken()
         Assert.assertEquals(accessToken, diskAccessToken)
 
         // clear access token
         dataSource.clearAccessToken()
         Assert.assertNull(dataSource.getAccessToken())
-        Assert.assertNull(OAuthLocalDataSourceImpl(context, secretKeyManager).getAccessToken())
+        Assert.assertNull(
+            OAuthLocalDataSourceImpl(context, secretKeyManager, legacyKeyManager)
+                .getAccessToken()
+        )
     }
 
     @Test
@@ -80,7 +87,7 @@ class OAuthLocalDataSourceImplTest {
         Mockito.`when`(secretKeyManager.getOrCreateSecretKey(Mockito.anyString()))
             .thenAnswer { throw exception }
 
-        dataSource = OAuthLocalDataSourceImpl(context, secretKeyManager)
+        dataSource = OAuthLocalDataSourceImpl(context, secretKeyManager, legacyKeyManager)
 
         Assert.assertNull(dataSource.getAccessToken())
     }

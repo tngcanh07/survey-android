@@ -2,6 +2,7 @@ package com.tn07.survey.data.di
 
 import android.content.Context
 import android.os.Build
+import com.tn07.survey.data.crypto.LegacySecretKeyManager
 import com.tn07.survey.data.crypto.SecretKeyManager
 import com.tn07.survey.data.crypto.SecretKeyManagerImpl
 import com.tn07.survey.data.crypto.SecretKeyManagerPreMImpl
@@ -29,5 +30,13 @@ class CryptoModule {
         } else {
             SecretKeyManagerPreMImpl(context)
         }
+    }
+
+    @Provides
+    @Singleton
+    fun providesLegacyKeyManager(
+        @ApplicationContext context: Context
+    ): LegacySecretKeyManager {
+        return SecretKeyManagerPreMImpl(context)
     }
 }

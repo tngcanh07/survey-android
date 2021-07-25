@@ -17,10 +17,18 @@ private const val KEY_ALIAS_SUFFIX = "PreM"
 
 class SecretKeyManagerPreMImpl @Inject constructor(
     private val context: Context
-) : SecretKeyManager {
+) : LegacySecretKeyManager {
 
     override val aesCipherAlgorithm: String
         get() = "AES/CBC/PKCS5Padding"
+
+    override fun isExist(keyAlias: String): Boolean {
+        return getKeyFile(keyAlias).exists()
+    }
+
+    override fun delete(keyAlias: String) {
+        getKeyFile(keyAlias).delete()
+    }
 
     override fun getOrCreateSecretKey(keyAlias: String): SecretKey {
         val alias = "${keyAlias}${KEY_ALIAS_SUFFIX}"
@@ -45,6 +53,14 @@ class SecretKeyManagerPreMImpl @Inject constructor(
 
         // read secret key from file
         return secretKeyWrapper.unwrap(keyFile.readBytes())
+    }
+
+    private fun getKeyFile(keyAlias: String): File {
+        val alias = "${keyAlias}${KEY_ALIAS_SUFFIX}"
+        return File(
+            context.filesDir,
+            Base64.encodeToString(alias.toByteArray(Charsets.UTF_8), Base64.DEFAULT)
+        )
     }
 
     private fun generateSecretKey(): SecretKey {
