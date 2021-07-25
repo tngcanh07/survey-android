@@ -79,7 +79,6 @@ class LoginTransformerImplTest {
         Assert.assertEquals(initialLoginUiModel, uiModel)
     }
 
-
     @Test
     fun updatePassword() {
         val initialLoginUiModel = transformer.initialLoginUiModel
@@ -113,7 +112,7 @@ class LoginTransformerImplTest {
             initialLoginUiModel.emailTextField.text,
             uiModel.emailTextField.text
         )
-        Assert.assertNotNull(
+        Assert.assertEquals(
             resources.getString(R.string.error_invalid_email),
             uiModel.emailTextField.error
         )

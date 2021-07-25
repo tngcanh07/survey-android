@@ -10,7 +10,6 @@ import com.tn07.survey.features.login.uimodel.LoginUiModel
 import com.tn07.survey.features.login.uimodel.TextFieldUiModel
 import com.tn07.survey.features.login.validator.LogInFormValidator
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.observers.TestObserver
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -23,7 +22,7 @@ import org.mockito.MockitoAnnotations
  */
 class LoginViewModelTest {
 
-    private lateinit var loginViewModel: LoginViewModel
+    private lateinit var viewModel: LoginViewModel
 
     @Mock
     private lateinit var loginUseCase: LoginUseCase
@@ -43,29 +42,24 @@ class LoginViewModelTest {
         isLoading = false
     )
 
-    private lateinit var loginUiModelObserver: TestObserver<LoginUiModel>
-    private lateinit var loginResultObserver: TestObserver<LoginResultUiModel>
-
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
         Mockito.`when`(transformer.initialLoginUiModel).thenReturn(initialLoginUiModel)
-        loginViewModel = LoginViewModel(
+        viewModel = LoginViewModel(
             loginUseCase = loginUseCase,
             getTokenUseCase = getTokenUseCase,
             formValidator = formValidator,
             transformer = transformer,
             schedulerProvider = TestComponent.schedulerProvider
         )
-        loginUiModelObserver = loginViewModel.loginUiModel.test()
-        loginResultObserver = loginViewModel.loginResult.test()
-
-        loginViewModel.init()
+        viewModel.init()
     }
 
     @Test
     fun init() {
-        loginUiModelObserver.awaitCount(1)
+        viewModel.loginUiModel
+            .test()
             .assertValue(initialLoginUiModel)
             .assertNotComplete()
     }
@@ -76,10 +70,11 @@ class LoginViewModelTest {
         val nextState = Mockito.mock(LoginUiModel::class.java)
         Mockito.`when`(transformer.updateEmail(initialLoginUiModel, email)).thenReturn(nextState)
 
-        loginViewModel.setEmail(email)
+        viewModel.setEmail(email)
 
-        loginUiModelObserver.awaitCount(2)
-            .assertValues(nextState)
+        viewModel.loginUiModel
+            .test()
+            .assertValue(nextState)
             .assertNotComplete()
     }
 
@@ -90,10 +85,11 @@ class LoginViewModelTest {
         Mockito.`when`(transformer.updatePassword(initialLoginUiModel, password))
             .thenReturn(nextState)
 
-        loginViewModel.setPassword(password)
+        viewModel.setPassword(password)
 
-        loginUiModelObserver.awaitCount(2)
-            .assertValues(nextState)
+        viewModel.loginUiModel
+            .test()
+            .assertValue(nextState)
             .assertNotComplete()
     }
 
@@ -102,11 +98,14 @@ class LoginViewModelTest {
         val email = initialLoginUiModel.emailTextField.text
         val password = initialLoginUiModel.passwordTextField.text
         Mockito.`when`(loginUseCase.login(email, password)).thenReturn(Completable.complete())
+        val testSubscriber = viewModel.loginResult
+            .test()
 
-        loginViewModel.login()
+        viewModel.login()
 
-        loginResultObserver.awaitCount(2)
+        testSubscriber
             .assertValue(LoginResultUiModel.Success)
+            .assertNotComplete()
     }
 
     @Test
@@ -119,10 +118,13 @@ class LoginViewModelTest {
             .thenReturn(Completable.error(expectedException))
         Mockito.`when`(transformer.transformErrorResult(expectedException))
             .thenReturn(expectedError)
+        val testSubscriber = viewModel.loginResult
+            .test()
 
-        loginViewModel.login()
+        viewModel.login()
 
-        loginResultObserver.awaitCount(2)
+        testSubscriber
             .assertValue(expectedError)
+            .assertNotComplete()
     }
 }
