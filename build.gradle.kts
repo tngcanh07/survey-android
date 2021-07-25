@@ -20,3 +20,15 @@ allprojects {
         maven("https://jitpack.io")
     }
 }
+
+plugins {
+    id("org.sonarqube") version Versions.SONAQUBE
+}
+
+subprojects {
+    sonarqube {
+        properties {
+            property("sonar.sourceEncoding", "UTF-8")
+        }
+    }
+}

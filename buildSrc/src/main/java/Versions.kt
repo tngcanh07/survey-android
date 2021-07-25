@@ -39,4 +39,6 @@ object Versions {
     const val ROBOLECTRIC = "4.6.1"
     const val ANDROID_TEST_RUNNER = "1.4.0"
     const val ANDROID_JUNIT_EXT = "1.1.3"
+
+    const val SONAQUBE = "3.0"
 }
