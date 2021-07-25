@@ -118,7 +118,6 @@ class HomeViewModel @Inject constructor(
 
     private fun mergeSurveyData(data: Pageable<Survey>) {
         val currentState = _surveyListResult.value
-
         val items = if (data.page == FIRST_PAGE_INDEX) {
             data.items.map(transformer::transformSurvey)
         } else {

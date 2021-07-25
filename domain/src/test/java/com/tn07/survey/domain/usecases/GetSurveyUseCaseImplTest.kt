@@ -4,6 +4,7 @@ import com.tn07.survey.domain.entities.Pageable
 import com.tn07.survey.domain.entities.Survey
 import com.tn07.survey.domain.exceptions.DomainException
 import com.tn07.survey.domain.repositories.SurveyRepository
+import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -56,6 +57,42 @@ internal class GetSurveyUseCaseImplTest {
             .assertError(expectedException)
 
         Mockito.verify(repository).getSurveys(page = page, pageSize = pageSize)
+    }
+
+    @Test
+    fun getLocalSurveys() {
+        val surveys = listOf(
+            Mockito.mock(Survey::class.java),
+            Mockito.mock(Survey::class.java),
+            Mockito.mock(Survey::class.java)
+        )
+        Mockito.`when`(repository.getLocalSurveys())
+            .thenReturn(Maybe.just(surveys))
+
+        useCase.getLocalSurveys()
+            .test()
+            .assertNoErrors()
+            .assertComplete()
+            .assertValue(surveys)
+
+        Mockito.verify(repository).getLocalSurveys()
+    }
+
+
+    @Test
+    fun getLocalSurveys_error() {
+        val expectedException = DomainException()
+
+        Mockito.`when`(repository.getLocalSurveys())
+            .thenReturn(Maybe.error(expectedException))
+
+
+        useCase.getLocalSurveys()
+            .test()
+            .assertNoValues()
+            .assertError(expectedException)
+
+        Mockito.verify(repository).getLocalSurveys()
     }
 }
 

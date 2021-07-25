@@ -24,6 +24,6 @@ class SurveyEntity(
     @ColumnInfo(name = "description")
     override val description: String,
 
-    @ColumnInfo(name = "coverImageUrl")
+    @ColumnInfo(name = "cover_image_url")
     override val coverImageUrl: String
 ) : Survey

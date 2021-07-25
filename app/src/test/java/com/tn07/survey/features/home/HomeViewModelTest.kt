@@ -1,5 +1,6 @@
 package com.tn07.survey.features.home
 
+import com.tn07.survey.data.survey.SURVEY_FIRST_PAGE_INDEX
 import com.tn07.survey.domain.entities.Pageable
 import com.tn07.survey.domain.entities.Survey
 import com.tn07.survey.domain.entities.User
@@ -9,10 +10,12 @@ import com.tn07.survey.domain.usecases.GetUserUseCase
 import com.tn07.survey.domain.usecases.LogoutUseCase
 import com.tn07.survey.features.TestComponent
 import com.tn07.survey.features.home.transformer.HomeTransformer
+import com.tn07.survey.features.home.uimodel.HomeState
 import com.tn07.survey.features.home.uimodel.LogoutResultUiModel
 import com.tn07.survey.features.home.uimodel.SurveyUiModel
 import com.tn07.survey.features.home.uimodel.UserUiModel
 import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import org.junit.Assert
@@ -22,6 +25,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import kotlin.math.min
 
 /**
@@ -31,6 +35,7 @@ import kotlin.math.min
 private const val PAGE_SIZE = 5
 
 class HomeViewModelTest {
+
     private lateinit var viewModel: HomeViewModel
 
     @Mock
@@ -104,48 +109,131 @@ class HomeViewModelTest {
 
     @Test
     fun initSurvey() {
-        val surveys = mockSurveyData(1, 20)
+        val initSurveys = emptyList<SurveyUiModel>()
+        val data = (1..1).map { Mockito.mock(Survey::class.java) }
+        Mockito.`when`(getSurveyUseCase.getLocalSurveys())
+            .thenReturn(Maybe.just(data))
+        val localSurvey = data.map {
+            val uiModel = Mockito.mock(SurveyUiModel::class.java)
+            Mockito.`when`(transformer.transformSurvey(it)).thenReturn(uiModel)
+            uiModel
+        }
+
+        val remoteSurveys = mockSurveyData(1, 2)
+
+        val testSubscriber = viewModel.surveyListResult
+            .test()
 
         viewModel.initSurveys()
 
-        viewModel.surveyListResult
+        testSubscriber.assertValueCount(3)
+            .assertValues(initSurveys, localSurvey, remoteSurveys)
+            .assertNotComplete()
+
+        viewModel.surveyLoadingEvents
             .test()
-            .assertValues(surveys)
+            .assertValue {
+                it is HomeState.Survey
+            }
+            .assertNotComplete()
+    }
+
+    @Test
+    fun initSurvey_noLocalSurvey() {
+        val initSurveys = emptyList<SurveyUiModel>()
+        Mockito.`when`(getSurveyUseCase.getLocalSurveys())
+            .thenReturn(Maybe.error(RuntimeException()))
+
+        val remoteSurveys = mockSurveyData(1, 2)
+
+        val testSubscriber = viewModel.surveyListResult
+            .test()
+
+        viewModel.initSurveys()
+
+        testSubscriber.assertValueCount(2)
+            .assertValues(initSurveys, remoteSurveys)
+            .assertNotComplete()
+
+        viewModel.surveyLoadingEvents
+            .test()
+            .assertValue {
+                it is HomeState.Survey
+            }
+            .assertNotComplete()
+    }
+
+    @Test
+    fun initSurvey_loadRemoteFailed() {
+        val initSurveys = emptyList<SurveyUiModel>()
+        val data = (1..1).map { Mockito.mock(Survey::class.java) }
+        Mockito.`when`(getSurveyUseCase.getLocalSurveys())
+            .thenReturn(Maybe.just(data))
+        val localSurvey = data.map {
+            val uiModel = Mockito.mock(SurveyUiModel::class.java)
+            Mockito.`when`(transformer.transformSurvey(it)).thenReturn(uiModel)
+            uiModel
+        }
+
+        Mockito.`when`(getSurveyUseCase.getSurveys(SURVEY_FIRST_PAGE_INDEX, PAGE_SIZE))
+            .thenReturn(Single.fromCallable { throw ConnectionException(UnknownHostException()) })
+
+        val testSubscriber = viewModel.surveyListResult
+            .test()
+
+        viewModel.initSurveys()
+
+        testSubscriber.assertValueCount(2)
+            .assertValues(initSurveys, localSurvey)
+            .assertNotComplete()
+
+        viewModel.surveyLoadingEvents
+            .test()
+            .assertValue {
+                it is HomeState.Survey
+            }
             .assertNotComplete()
     }
 
     @Test
     fun loadSurveys() {
-        val total = 7
+        val total = 9
+        val initSurveys = emptyList<SurveyUiModel>()
         val firstPageSurveys = mockSurveyData(1, total)
         val secondPageSurveys = mockSurveyData(2, total)
 
+        val testSubscriber = viewModel.surveyListResult
+            .test()
+
         // first pages
         viewModel.setCurrentPage(0)
-        viewModel.surveyListResult
-            .test()
-            .awaitCount(2)
-            .assertValue(firstPageSurveys)
+        testSubscriber.assertValueCount(2)
+            .assertValues(initSurveys, firstPageSurveys)
             .assertNotComplete()
 
         // still far from the end => don't load next page
         viewModel.setCurrentPage(1)
+        testSubscriber.assertValueCount(2)
+            .assertValues(initSurveys, firstPageSurveys)
+            .assertNotComplete()
 
         // second page
         viewModel.setCurrentPage(firstPageSurveys.lastIndex)
         val expected2PagesSurveys = firstPageSurveys + secondPageSurveys
-        viewModel.surveyListResult
-            .test()
-            .awaitCount(3)
-            .assertValue(expected2PagesSurveys)
+        testSubscriber.awaitCount(3)
+            .assertValues(emptyList(), firstPageSurveys, expected2PagesSurveys)
             .assertNotComplete()
 
         // no more data
         viewModel.setCurrentPage(expected2PagesSurveys.lastIndex)
+        testSubscriber.awaitCount(3)
+            .assertValues(emptyList(), firstPageSurveys, expected2PagesSurveys)
+            .assertNotComplete()
     }
 
     @Test
     fun refreshSurveys() {
+        Mockito.`when`(getSurveyUseCase.getLocalSurveys()).thenReturn(Maybe.empty())
         mockSurveyData(1, 20)
         viewModel.initSurveys()
 
@@ -183,4 +271,3 @@ class HomeViewModelTest {
         }
     }
 }
-

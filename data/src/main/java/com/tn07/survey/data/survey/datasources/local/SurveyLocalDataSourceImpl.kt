@@ -12,7 +12,7 @@ import javax.inject.Inject
  * Jul 24, 2021 at 23:15
  */
 class SurveyLocalDataSourceImpl @Inject constructor(
-    @SurveyDatabaseQualifier val surveyDao: SurveyDao
+    @SurveyDatabaseQualifier private val surveyDao: SurveyDao
 ) : SurveyLocalDataSource {
 
     override fun saveSurveys(surveys: List<Survey>) {

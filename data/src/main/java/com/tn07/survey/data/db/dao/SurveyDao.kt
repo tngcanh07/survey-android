@@ -17,9 +17,6 @@ interface SurveyDao {
     @Query("SELECT * FROM $SURVEY_TABLE_NAME")
     fun getAllSurveys(): Maybe<List<SurveyEntity>>
 
-    @Query("SELECT * FROM $SURVEY_TABLE_NAME")
-    fun getAllSurveysTest(): List<SurveyEntity>
-
     @Query("DELETE FROM $SURVEY_TABLE_NAME")
     fun deleteAllSurveys()
 
