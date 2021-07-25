@@ -2,12 +2,15 @@ package com.tn07.survey.data.oauth.datasources.local
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import com.tn07.survey.data.crypto.SecretKeyManager
 import com.tn07.survey.data.crypto.decryptAes
 import com.tn07.survey.data.crypto.encryptAes
+import com.tn07.survey.data.di.qualifier.PreMQualifier
 import com.tn07.survey.data.oauth.models.AccessTokenDataModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.security.GeneralSecurityException
+import javax.crypto.SecretKey
 import javax.inject.Inject
 
 /**
@@ -25,7 +28,8 @@ private const val KEY_CREATED_AT = "survey.prefs.oauth.createdAT"
 
 class OAuthLocalDataSourceImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val secretKeyManager: SecretKeyManager
+    private val secretKeyManager: SecretKeyManager,
+    @PreMQualifier private val legacyKeyManager: SecretKeyManager
 ) : OAuthLocalDataSource {
 
     private val locker = Any()
@@ -85,13 +89,38 @@ class OAuthLocalDataSourceImpl @Inject constructor(
             }
             .apply()
 
+        // remove legacy secret key
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+            && legacyKeyManager.isExist(KEY_STORE_ALIAS)
+        ) {
+            legacyKeyManager.delete(KEY_STORE_ALIAS)
+        }
     }
 
     @Throws(GeneralSecurityException::class)
     private fun loadAccessToken(): AccessTokenDataModel? {
-        val secretKey = secretKeyManager.getOrCreateSecretKey(KEY_STORE_ALIAS)
-        val algorithm = secretKeyManager.aesCipherAlgorithm
+        return try {
+            loadAccessToken(
+                secretKey = secretKeyManager.getOrCreateSecretKey(KEY_STORE_ALIAS),
+                algorithm = secretKeyManager.aesCipherAlgorithm
+            )
+        } catch (e: GeneralSecurityException) {
+            // use legacy secret key
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && legacyKeyManager.isExist(KEY_STORE_ALIAS)
+            ) {
+                loadAccessToken(
+                    secretKey = legacyKeyManager.getOrCreateSecretKey(KEY_STORE_ALIAS),
+                    algorithm = legacyKeyManager.aesCipherAlgorithm
+                )
+            } else {
+                null
+            }
+        }
+    }
 
+    @Throws(GeneralSecurityException::class)
+    private fun loadAccessToken(secretKey: SecretKey, algorithm: String): AccessTokenDataModel? {
         with(sharedPreferences) {
             val accessToken = getString(KEY_ACCESS_TOKEN, null)
                 ?.let { decryptAes(it, secretKey, algorithm) }

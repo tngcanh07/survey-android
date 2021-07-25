@@ -12,7 +12,7 @@ import javax.crypto.SecretKey
  * Created by toannguyen
  * Jul 16, 2021 at 21:16
  */
-@TargetApi(Build.VERSION_CODES.M)
+
 class SecretKeyManagerImpl : SecretKeyManager {
 
     override val aesCipherAlgorithm: String
@@ -24,7 +24,7 @@ class SecretKeyManagerImpl : SecretKeyManager {
         }
     }
 
-
+    @TargetApi(Build.VERSION_CODES.M)
     override fun getOrCreateSecretKey(keyAlias: String): SecretKey {
         if (!androidKeyStore.containsAlias(keyAlias)) {
             val aesSpec = KeyGenParameterSpec.Builder(
@@ -44,5 +44,13 @@ class SecretKeyManagerImpl : SecretKeyManager {
 
         val keyEntry = androidKeyStore.getEntry(keyAlias, null) as KeyStore.SecretKeyEntry
         return keyEntry.secretKey
+    }
+
+    override fun isExist(keyAlias: String): Boolean {
+        return androidKeyStore.containsAlias(keyAlias)
+    }
+
+    override fun delete(keyAlias: String) {
+        androidKeyStore.deleteEntry(keyAlias)
     }
 }
