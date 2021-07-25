@@ -36,6 +36,7 @@
         android:ellipsize="end"
         android:lines="2"
         android:maxLines="2"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/open_detail_fab"
         app:layout_constraintEnd_toEndOf="@id/survey_content_boundary"
         app:layout_constraintStart_toStartOf="@id/survey_content_boundary"
