@@ -16,4 +16,8 @@ class LoginNavigatorImpl @Inject constructor(
     override fun navigateLoginSuccess() {
         navigate(LoginFragmentDirections.actionLoginOpenHome())
     }
+
+    override fun navigateForgotPassword() {
+        navigate(LoginFragmentDirections.actionForgotPassword())
+    }
 }

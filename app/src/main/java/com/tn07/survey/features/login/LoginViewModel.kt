@@ -88,6 +88,7 @@ class LoginViewModel @Inject constructor(
                 password = uiModel.passwordTextField.text
             )
         }
+            .subscribeOn(schedulerProvider.io())
             .doOnSubscribe { onStartLogIn() }
             .subscribe(::onLoginSuccess, ::onLoginError)
             .addToCompositeDisposable()
@@ -96,13 +97,13 @@ class LoginViewModel @Inject constructor(
     private fun onLoginSuccess() {
         _loginResult.onNext(LoginResultUiModel.Success)
         loginUiModelEvents.onNext {
-            it.copy(isLoading = false)
+            transformer.updateLoadingStatus(it, false)
         }
     }
 
     private fun onStartLogIn() {
         loginUiModelEvents.onNext {
-            it.copy(isLoading = true)
+            transformer.updateLoadingStatus(it, true)
         }
     }
 

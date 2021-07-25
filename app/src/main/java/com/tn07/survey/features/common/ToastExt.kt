@@ -1,6 +1,7 @@
 package com.tn07.survey.features.common
 
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.viewbinding.ViewBinding
 import com.tn07.survey.features.base.BaseFragment
 
@@ -10,4 +11,11 @@ import com.tn07.survey.features.base.BaseFragment
  */
 fun <T : ViewBinding> BaseFragment<T>.toast(message: String, length: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(requireContext(), message, length).show()
+}
+
+fun <T : ViewBinding> BaseFragment<T>.toast(
+    @StringRes messageStringRes: Int,
+    length: Int = Toast.LENGTH_SHORT
+) {
+    Toast.makeText(requireContext(), messageStringRes, length).show()
 }

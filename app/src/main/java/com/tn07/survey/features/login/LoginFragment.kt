@@ -3,7 +3,6 @@ package com.tn07.survey.features.login
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.Insets
@@ -14,11 +13,13 @@ import com.google.android.material.textfield.TextInputLayout
 import com.jakewharton.rxbinding4.widget.afterTextChangeEvents
 import com.tn07.survey.BLURRY_RADIUS
 import com.tn07.survey.BLURRY_SAMPLING
+import com.tn07.survey.DEBOUNCE_TEXT_CHANGE_EVENT
 import com.tn07.survey.R
 import com.tn07.survey.databinding.FragmentLoginBinding
 import com.tn07.survey.features.base.BaseFragment
 import com.tn07.survey.features.common.SchedulerProvider
 import com.tn07.survey.features.common.applySystemBarInsets
+import com.tn07.survey.features.common.toast
 import com.tn07.survey.features.login.uimodel.LoginResultUiModel
 import com.tn07.survey.features.login.uimodel.TextFieldUiModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,7 +31,6 @@ import javax.inject.Inject
  * Created by toannguyen
  * Jul 15, 2021 at 09:03
  */
-private const val DEBOUNCE_TEXT_CHANGE_EVENT = 250L
 
 @AndroidEntryPoint
 class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::inflate) {
@@ -48,7 +48,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
         viewModel.init()
 
         binding.passwordInputLayout.suffixTextView.setOnClickListener {
-            Toast.makeText(requireContext(), "Coming soon!", Toast.LENGTH_SHORT).show()
+            navigator.navigateForgotPassword()
         }
         binding.emailEditText.doAfterTextChanged {
             with(binding.emailInputLayout) {
@@ -163,18 +163,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
     private fun bindLoginResult(uiModel: LoginResultUiModel) {
         when (uiModel) {
             is LoginResultUiModel.Error -> {
-                Toast.makeText(
-                    requireContext(),
-                    uiModel.errorMessage,
-                    Toast.LENGTH_SHORT
-                ).show()
+                toast(uiModel.errorMessage)
             }
             LoginResultUiModel.Success -> {
-                Toast.makeText(
-                    requireContext(),
-                    R.string.login_success_message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                toast(R.string.login_success_message)
             }
         }
     }

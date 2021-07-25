@@ -6,4 +6,6 @@ package com.tn07.survey.features.login
  */
 interface LoginNavigator {
     fun navigateLoginSuccess()
+
+    fun navigateForgotPassword()
 }

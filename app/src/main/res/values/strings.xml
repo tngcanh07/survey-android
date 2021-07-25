@@ -1,13 +1,14 @@
 <resources>
     <string name="app_name">Survey</string>
 
-    <string name="login_email_hint">Email</string>
+    <string name="email_hint">Email</string>
     <string name="login_password_hint">Password</string>
     <string name="login_forgot_password_button">Forgot?</string>
     <string name="login_button">Log In</string>
     <string name="login_processing_button">Logging In…</string>
     <string name="login_success_message">You have logged in successfully</string>
     <string name="login_fail_message">Login failed. Email or password is not correct!</string>
+    <string name="reset_password_fail_message">Can not reset!</string>
 
     <string name="error_invalid_email">Please enter a valid email address</string>
     <string name="error_invalid_password">Please enter the password</string>
@@ -19,4 +20,8 @@
 
     <string name="landing_page_start_survey">Start Survey</string>
     <string name="retry_button">Try Again</string>
+    <string name="forgot_password_instruction_message">Enter your email to receive instructions for resetting your password.</string>
+    <string name="reset_password_button">Reset</string>
+    <string name="reset_password_processing_button">Resetting…</string>
+    <string name="reset_password_success_message">Request sent successfully! You will receive a password recovery link at your email address in a few minutes.</string>
 </resources>
