@@ -16,15 +16,12 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
  * Created by toannguyen
  * Jul 15, 2021 at 09:04
  */
-private const val DEBOUNCE_UI_MODEL = 100L
-
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
@@ -38,10 +35,9 @@ class LoginViewModel @Inject constructor(
     val loginResult: Observable<LoginResultUiModel>
         get() = _loginResult
 
-    private val _loginUiModel = BehaviorSubject.create<LoginUiModel>()
+    private val _loginUiModel = BehaviorSubject.createDefault(transformer.initialLoginUiModel)
     val loginUiModel: Observable<LoginUiModel>
-        get() = _loginUiModel.debounce(DEBOUNCE_UI_MODEL, TimeUnit.MILLISECONDS)
-            .distinctUntilChanged()
+        get() = _loginUiModel.distinctUntilChanged()
 
     val loginState: Observable<Boolean>
         get() = getTokenUseCase.getTokenObservable()
@@ -51,8 +47,6 @@ class LoginViewModel @Inject constructor(
     private val loginUiModelEvents = PublishSubject.create<(LoginUiModel) -> LoginUiModel>()
 
     fun init() {
-        _loginUiModel.onNext(transformer.initialLoginUiModel)
-
         loginUiModelEvents.toFlowable(BackpressureStrategy.BUFFER)
             .subscribeOn(schedulerProvider.io())
             .subscribe {
@@ -88,6 +82,7 @@ class LoginViewModel @Inject constructor(
                 password = uiModel.passwordTextField.text
             )
         }
+            .subscribeOn(schedulerProvider.io())
             .doOnSubscribe { onStartLogIn() }
             .subscribe(::onLoginSuccess, ::onLoginError)
             .addToCompositeDisposable()
@@ -96,13 +91,13 @@ class LoginViewModel @Inject constructor(
     private fun onLoginSuccess() {
         _loginResult.onNext(LoginResultUiModel.Success)
         loginUiModelEvents.onNext {
-            it.copy(isLoading = false)
+            transformer.updateLoadingStatus(it, false)
         }
     }
 
     private fun onStartLogIn() {
         loginUiModelEvents.onNext {
-            it.copy(isLoading = true)
+            transformer.updateLoadingStatus(it, true)
         }
     }
 

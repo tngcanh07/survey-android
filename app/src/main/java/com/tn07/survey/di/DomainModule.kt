@@ -10,6 +10,8 @@ import com.tn07.survey.domain.usecases.LoginUseCase
 import com.tn07.survey.domain.usecases.LoginUseCaseImpl
 import com.tn07.survey.domain.usecases.LogoutUseCase
 import com.tn07.survey.domain.usecases.LogoutUseCaseImpl
+import com.tn07.survey.domain.usecases.RequestPasswordUseCase
+import com.tn07.survey.domain.usecases.RequestPasswordUseCaseImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -24,6 +26,9 @@ import dagger.hilt.android.components.ViewModelComponent
 interface DomainModule {
     @Binds
     fun bindLoginUseCase(useCase: LoginUseCaseImpl): LoginUseCase
+
+    @Binds
+    fun bindRequestPasswordUseCase(useCase: RequestPasswordUseCaseImpl): RequestPasswordUseCase
 
     @Binds
     fun bindGetTokenUseCase(useCase: GetTokenUseCaseImpl): GetTokenUseCase

@@ -7,3 +7,5 @@ package com.tn07.survey
 
 const val BLURRY_RADIUS = 25
 const val BLURRY_SAMPLING = 2
+
+const val DEBOUNCE_TEXT_CHANGE_EVENT = 250L
