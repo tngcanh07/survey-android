@@ -2,6 +2,7 @@ package com.tn07.survey.domain.repositories
 
 import com.tn07.survey.domain.entities.Pageable
 import com.tn07.survey.domain.entities.Survey
+import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 
 /**
@@ -10,4 +11,6 @@ import io.reactivex.rxjava3.core.Single
  */
 interface SurveyRepository {
     fun getSurveys(page: Int, pageSize: Int): Single<Pageable<Survey>>
+
+    fun getLocalSurveys(): Maybe<List<Survey>>
 }

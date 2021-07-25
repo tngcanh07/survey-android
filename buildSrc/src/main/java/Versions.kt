@@ -16,6 +16,7 @@ object Versions {
 
     const val RX_JAVA3 = "3.0.13"
     const val RX_ANDROID3 = "3.0.0"
+    const val ROOM = "2.3.0"
 
     const val RETROFIT = "2.9.0"
     const val OKHTTP = "4.9.1"

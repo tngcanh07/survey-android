@@ -144,6 +144,10 @@ dependencies {
     implementation(Libs.GSON)
     implementation(Libs.RX_JAVA3)
 
+    api(Libs.ROOM_RUNTIME)
+    implementation(Libs.ROOM_RX_JAVA3)
+    kapt(Libs.ROOM_COMPILER)
+
     implementation(Libs.HILT_ANDROID)
     kapt(Libs.HILT_COMPILER)
 

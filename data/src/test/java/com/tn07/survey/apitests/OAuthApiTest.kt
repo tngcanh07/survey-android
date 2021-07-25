@@ -60,14 +60,13 @@ class OAuthApiTest {
             .test()
             .await()
             .assertNoErrors()
-            .awaitCount(1)
             .values()
             .first()
 
         accessToken = oauthRemoteData.refreshToken(accessToken.refreshToken)
             .test()
+            .await()
             .assertNoErrors()
-            .awaitCount(1)
             .values()
             .first()
 

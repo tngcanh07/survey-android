@@ -1,5 +1,6 @@
 package com.tn07.survey.features.home
 
+import com.tn07.survey.data.survey.SURVEY_FIRST_PAGE_INDEX
 import com.tn07.survey.domain.entities.Pageable
 import com.tn07.survey.domain.entities.Survey
 import com.tn07.survey.domain.usecases.GetSurveyUseCase
@@ -26,7 +27,6 @@ import javax.inject.Inject
  * Created by toannguyen
  * Jul 17, 2021 at 15:59
  */
-private const val FIRST_PAGE_INDEX = 1
 private const val PAGE_SIZE = 5
 private const val PREFETCH_OFFSET = 1
 
@@ -77,7 +77,27 @@ class HomeViewModel @Inject constructor(
     }
 
     fun initSurveys() {
-        checkAndLoadSurveyIfNeeded()
+        if (_surveyListResult.value.totalPage == null) {
+            loadingSurveyDisposable = getSurveyUseCase.getLocalSurveys()
+                .doOnSuccess {
+                    val surveyUiModels = it.map(transformer::transformSurvey)
+                    val surveyData = _surveyListResult.value
+                    if (surveyData.totalPage == null && surveyUiModels.isNotEmpty()) {
+                        val localSurveyData = surveyData.copy(items = surveyUiModels)
+                        _surveyListResult.onNext(localSurveyData)
+                        _homeState.onNext(HomeState.Survey(isLoadingNext = false))
+                    }
+                }
+                .ignoreElement()
+                .onErrorComplete()
+                .subscribeOn(schedulerProvider.io())
+                .subscribe {
+                    loadingSurveyDisposable = null
+                    checkAndLoadSurveyIfNeeded()
+                }
+        } else {
+            checkAndLoadSurveyIfNeeded()
+        }
     }
 
     private fun loadUser() {
@@ -99,8 +119,7 @@ class HomeViewModel @Inject constructor(
 
     private fun mergeSurveyData(data: Pageable<Survey>) {
         val currentState = _surveyListResult.value
-
-        val items = if (data.page == FIRST_PAGE_INDEX) {
+        val items = if (data.page == SURVEY_FIRST_PAGE_INDEX) {
             data.items.map(transformer::transformSurvey)
         } else {
             currentState.items + data.items.map(transformer::transformSurvey)
@@ -117,22 +136,22 @@ class HomeViewModel @Inject constructor(
     @Synchronized
     private fun loadNextPage() {
         if (loadingSurveyDisposable?.isDisposed != false && hasMore) {
-            val currentData = _surveyListResult.value
-            val nextPage = currentData.page + 1
+            val nextPage = _surveyListResult.value.page + 1
             loadingSurveyDisposable = getSurveyUseCase.getSurveys(nextPage, PAGE_SIZE)
                 .doOnSubscribe {
-                    if (currentData.items.isEmpty()) {
+                    if (_surveyListResult.value.items.isEmpty()) {
                         _homeState.onNext(HomeState.Loading)
                     } else {
                         _homeState.onNext(HomeState.Survey(isLoadingNext = true))
                     }
                 }
+                .subscribeOn(schedulerProvider.io())
                 .subscribe({
                     mergeSurveyData(it)
                     _homeState.onNext(HomeState.Survey(isLoadingNext = false))
                 }, {
                     val errorMessage = transformer.transformErrorMessage(it)
-                    if (currentData.items.isEmpty()) {
+                    if (_surveyListResult.value.items.isEmpty()) {
                         _homeState.onNext(HomeState.Error(errorMessage))
                     } else {
                         _homeState.onNext(HomeState.Survey(isLoadingNext = false))
@@ -154,8 +173,10 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun checkAndLoadSurveyIfNeeded() {
-        if (currentSurveyItem + PREFETCH_OFFSET >= _surveyListResult.value.items.lastIndex) {
-            loadNextPage()
+        with(_surveyListResult.value) {
+            if (totalPage == null || currentSurveyItem + PREFETCH_OFFSET >= items.lastIndex) {
+                loadNextPage()
+            }
         }
     }
 

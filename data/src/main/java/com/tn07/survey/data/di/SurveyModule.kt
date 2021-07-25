@@ -1,6 +1,8 @@
 package com.tn07.survey.data.di
 
 import com.tn07.survey.data.survey.SurveyRepositoryImpl
+import com.tn07.survey.data.survey.datasources.local.SurveyLocalDataSource
+import com.tn07.survey.data.survey.datasources.local.SurveyLocalDataSourceImpl
 import com.tn07.survey.data.survey.datasources.remote.SurveyRemoteDataSource
 import com.tn07.survey.data.survey.datasources.remote.SurveyRemoteDataSourceImpl
 import com.tn07.survey.domain.repositories.SurveyRepository
@@ -18,6 +20,9 @@ import dagger.hilt.components.SingletonComponent
 interface SurveyModule {
     @Binds
     fun bindSurveyRemoteDataSource(impl: SurveyRemoteDataSourceImpl): SurveyRemoteDataSource
+
+    @Binds
+    fun bindSurveyLocalDataSource(impl: SurveyLocalDataSourceImpl): SurveyLocalDataSource
 
     @Binds
     fun bindSurveyRepository(impl: SurveyRepositoryImpl): SurveyRepository
