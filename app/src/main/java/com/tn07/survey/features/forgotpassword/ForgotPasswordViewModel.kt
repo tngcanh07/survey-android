@@ -1,12 +1,12 @@
 package com.tn07.survey.features.forgotpassword
 
-import com.tn07.survey.domain.usecases.ResetPasswordUseCase
+import com.tn07.survey.domain.usecases.RequestPasswordUseCase
 import com.tn07.survey.features.base.BaseViewModel
 import com.tn07.survey.features.common.SchedulerProvider
 import com.tn07.survey.features.forgotpassword.transformer.ForgotPasswordTransformer
 import com.tn07.survey.features.forgotpassword.uimodel.ForgotPasswordUiModel
 import com.tn07.survey.features.forgotpassword.uimodel.InvalidEmailException
-import com.tn07.survey.features.forgotpassword.uimodel.ResetPasswordResult
+import com.tn07.survey.features.forgotpassword.uimodel.RequestPasswordResult
 import com.tn07.survey.features.forgotpassword.validator.ForgotPasswordFormValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.core.BackpressureStrategy
@@ -24,7 +24,7 @@ private typealias UpdateUiModelEvent = (ForgotPasswordUiModel) -> ForgotPassword
 
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
-    private val resetPasswordUseCase: ResetPasswordUseCase,
+    private val requestPasswordUseCase: RequestPasswordUseCase,
     private val validator: ForgotPasswordFormValidator,
     private val transformer: ForgotPasswordTransformer,
     private val schedulerProvider: SchedulerProvider
@@ -34,9 +34,9 @@ class ForgotPasswordViewModel @Inject constructor(
     val forgotPasswordUiModel: Observable<ForgotPasswordUiModel>
         get() = _forgotPasswordUiModel.distinctUntilChanged()
 
-    private val _resetPasswordResult = PublishSubject.create<ResetPasswordResult>()
-    val resetPasswordResult: Observable<ResetPasswordResult>
-        get() = _resetPasswordResult
+    private val _requestPasswordResult = PublishSubject.create<RequestPasswordResult>()
+    val requestPasswordResult: Observable<RequestPasswordResult>
+        get() = _requestPasswordResult
 
     private val forgotPasswordUiModelEvents = PublishSubject.create<UpdateUiModelEvent>()
 
@@ -57,33 +57,33 @@ class ForgotPasswordViewModel @Inject constructor(
         }
     }
 
-    fun resetPassword() {
+    fun requestPassword() {
         Single.fromCallable {
             val uiModel = _forgotPasswordUiModel.value
             validator.validateResetPasswordForm(uiModel)
             return@fromCallable uiModel.email
         }
-            .doOnSubscribe { onStartResetPassword() }
-            .flatMapCompletable(resetPasswordUseCase::resetPassword)
+            .doOnSubscribe { onStartRequestPassword() }
+            .flatMapCompletable(requestPasswordUseCase::requestPassword)
             .subscribeOn(schedulerProvider.io())
-            .subscribe(::onResetPasswordSuccess, ::onResetPasswordError)
+            .subscribe(::onRequestPasswordSuccess, ::onRequestPasswordError)
             .addToCompositeDisposable()
     }
 
-    private fun onStartResetPassword() {
+    private fun onStartRequestPassword() {
         forgotPasswordUiModelEvents.onNext {
             transformer.updateLoadingStatus(it, true)
         }
     }
 
-    private fun onResetPasswordSuccess() {
+    private fun onRequestPasswordSuccess() {
         forgotPasswordUiModelEvents.onNext {
             transformer.updateLoadingStatus(it, false)
         }
-        _resetPasswordResult.onNext(ResetPasswordResult.Success)
+        _requestPasswordResult.onNext(RequestPasswordResult.Success)
     }
 
-    private fun onResetPasswordError(throwable: Throwable) {
+    private fun onRequestPasswordError(throwable: Throwable) {
         forgotPasswordUiModelEvents.onNext {
             transformer.updateLoadingStatus(it, false)
         }
@@ -92,7 +92,7 @@ class ForgotPasswordViewModel @Inject constructor(
                 transformer.updateInvalidEmailError(it)
             }
         } else {
-            _resetPasswordResult.onNext(transformer.transformErrorResult(throwable))
+            _requestPasswordResult.onNext(transformer.transformErrorResult(throwable))
         }
     }
 }

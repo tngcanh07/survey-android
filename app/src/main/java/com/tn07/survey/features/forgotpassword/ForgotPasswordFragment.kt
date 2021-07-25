@@ -20,7 +20,7 @@ import com.tn07.survey.features.common.SchedulerProvider
 import com.tn07.survey.features.common.applySystemBarInsets
 import com.tn07.survey.features.common.toast
 import com.tn07.survey.features.forgotpassword.uimodel.ForgotPasswordUiModel
-import com.tn07.survey.features.forgotpassword.uimodel.ResetPasswordResult
+import com.tn07.survey.features.forgotpassword.uimodel.RequestPasswordResult
 import dagger.hilt.android.AndroidEntryPoint
 import jp.wasabeef.blurry.Blurry
 import java.util.concurrent.TimeUnit
@@ -61,8 +61,8 @@ class ForgotPasswordFragment :
                 navigator.navigateBack()
             }
 
-            resetPasswordButton.setOnClickListener {
-                viewModel.resetPassword()
+            requestPasswordButton.setOnClickListener {
+                viewModel.requestPassword()
             }
 
             emailEditText.afterTextChangeEvents()
@@ -83,10 +83,10 @@ class ForgotPasswordFragment :
             .subscribe(::bindForgotPasswordUiModel)
             .addToCompositeDisposable()
 
-        viewModel.resetPasswordResult
+        viewModel.requestPasswordResult
             .subscribeOn(schedulerProvider.io())
             .observeOn(schedulerProvider.mainThread())
-            .subscribe(::bindResetPasswordResult)
+            .subscribe(::bindRequestPasswordResult)
             .addToCompositeDisposable()
 
         binding.emailEditText.afterTextChangeEvents()
@@ -104,11 +104,11 @@ class ForgotPasswordFragment :
         }
     }
 
-    private fun bindResetPasswordResult(result: ResetPasswordResult) {
-        if (result is ResetPasswordResult.Error) {
+    private fun bindRequestPasswordResult(result: RequestPasswordResult) {
+        if (result is RequestPasswordResult.Error) {
             toast(result.errorMessage)
         } else {
-            toast(R.string.reset_password_success_message, Toast.LENGTH_LONG)
+            toast(R.string.request_password_success_message, Toast.LENGTH_LONG)
             navigator.navigateBack()
         }
     }
@@ -135,7 +135,7 @@ class ForgotPasswordFragment :
     private fun showLoading() {
         with(binding) {
             emailInputLayout.isEnabled = false
-            resetPasswordButton.apply {
+            requestPasswordButton.apply {
                 isEnabled = false
                 setText(R.string.reset_password_processing_button)
             }
@@ -145,7 +145,7 @@ class ForgotPasswordFragment :
     private fun hideLoading() {
         with(binding) {
             emailInputLayout.isEnabled = true
-            resetPasswordButton.apply {
+            requestPasswordButton.apply {
                 isEnabled = true
                 setText(R.string.reset_password_button)
             }

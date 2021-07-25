@@ -1,7 +1,7 @@
 package com.tn07.survey.features.forgotpassword.transformer
 
 import com.tn07.survey.features.forgotpassword.uimodel.ForgotPasswordUiModel
-import com.tn07.survey.features.forgotpassword.uimodel.ResetPasswordResult
+import com.tn07.survey.features.forgotpassword.uimodel.RequestPasswordResult
 
 /**
  * Created by toannguyen
@@ -23,5 +23,5 @@ interface ForgotPasswordTransformer {
 
     fun updateInvalidEmailError(uiModel: ForgotPasswordUiModel): ForgotPasswordUiModel
 
-    fun transformErrorResult(throwable: Throwable): ResetPasswordResult.Error
+    fun transformErrorResult(throwable: Throwable): RequestPasswordResult.Error
 }

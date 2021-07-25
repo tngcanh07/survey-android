@@ -23,5 +23,5 @@
     <string name="forgot_password_instruction_message">Enter your email to receive instructions for resetting your password.</string>
     <string name="reset_password_button">Reset</string>
     <string name="reset_password_processing_button">Resetting…</string>
-    <string name="reset_password_success_message">Request sent successfully! You will receive a password recovery link at your email address in a few minutes.</string>
+    <string name="request_password_success_message">Request sent successfully! You will receive a password recovery link at your email address in a few minutes.</string>
 </resources>

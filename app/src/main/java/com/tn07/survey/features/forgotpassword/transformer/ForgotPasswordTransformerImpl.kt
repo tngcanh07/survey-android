@@ -4,7 +4,7 @@ import android.content.Context
 import com.tn07.survey.R
 import com.tn07.survey.domain.exceptions.ConnectionException
 import com.tn07.survey.features.forgotpassword.uimodel.ForgotPasswordUiModel
-import com.tn07.survey.features.forgotpassword.uimodel.ResetPasswordResult
+import com.tn07.survey.features.forgotpassword.uimodel.RequestPasswordResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -53,12 +53,12 @@ class ForgotPasswordTransformerImpl @Inject constructor(
         }
     }
 
-    override fun transformErrorResult(throwable: Throwable): ResetPasswordResult.Error {
+    override fun transformErrorResult(throwable: Throwable): RequestPasswordResult.Error {
         val errorMessage = when (throwable) {
             is ConnectionException -> getString(R.string.error_connection)
             else -> "${throwable.javaClass.name}: ${throwable.localizedMessage}"
         }
-        return ResetPasswordResult.Error(errorMessage)
+        return RequestPasswordResult.Error(errorMessage)
     }
 
     private fun getString(stringResId: Int): String {
